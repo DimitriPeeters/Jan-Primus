@@ -1,0 +1,13 @@
+{
+    "name": "aefs/v2",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "AEFS\\": "src/",
+            "AEFS\\Controllers\\": "app/Controllers/",
+            "AEFS\\Models\\": "app/Models/",
+            "AEFS\\Services\\": "app/Services/",
+            "AEFS\\Repositories\\": "app/Repositories/"
+        }
+    }
+}
