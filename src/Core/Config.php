@@ -4,51 +4,98 @@ declare(strict_types=1);
 
 namespace AEFS\Core;
 
+use RuntimeException;
+
 final class Config
 {
-    private static ?Config $instance = null;
+    /**
+     * @var array<string, mixed>
+     */
+    private array $items = [];
 
-    private array $config = [];
-
-    private function __construct()
-    {
-$bestand = dirname(__DIR__, 2) . '/config/aefs.php';
-        if (!file_exists($bestand)) {
-            throw new \RuntimeException("Configuratiebestand niet gevonden.");
-        }
-
-        $this->config = require $bestand;
+    public function __construct(
+        string $configPath
+    ) {
+        $this->load($configPath);
     }
 
-    public static function getInstance(): Config
+    public function has(string $key): bool
     {
-        if (self::$instance === null) {
-            self::$instance = new Config();
-        }
-
-        return self::$instance;
+        return $this->get($key) !== null;
     }
 
     public function get(string $key, mixed $default = null): mixed
     {
-        $keys = explode('.', $key);
+        $segments = explode('.', $key);
 
-        $waarde = $this->config;
+        $value = $this->items;
 
-        foreach ($keys as $deel) {
-
-            if (!isset($waarde[$deel])) {
+        foreach ($segments as $segment) {
+            if (!is_array($value) || !array_key_exists($segment, $value)) {
                 return $default;
             }
 
-            $waarde = $waarde[$deel];
+            $value = $value[$segment];
         }
 
-        return $waarde;
+        return $value;
     }
 
+    public function set(string $key, mixed $value): void
+    {
+        $segments = explode('.', $key);
+
+        $items =& $this->items;
+
+        while (count($segments) > 1) {
+            $segment = array_shift($segments);
+
+            if (!isset($items[$segment]) || !is_array($items[$segment])) {
+                $items[$segment] = [];
+            }
+
+            $items =& $items[$segment];
+        }
+
+        $items[array_shift($segments)] = $value;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     public function all(): array
     {
-        return $this->config;
+        return $this->items;
+    }
+
+    private function load(string $configPath): void
+    {
+        if (!is_dir($configPath)) {
+            throw new RuntimeException(sprintf(
+                'Configuration directory [%s] does not exist.',
+                $configPath
+            ));
+        }
+
+        $files = glob($configPath . DIRECTORY_SEPARATOR . '*.php');
+
+        if ($files === false) {
+            return;
+        }
+
+        foreach ($files as $file) {
+            $key = pathinfo($file, PATHINFO_FILENAME);
+
+            $config = require $file;
+
+            if (!is_array($config)) {
+                throw new RuntimeException(sprintf(
+                    'Configuration file [%s] must return an array.',
+                    basename($file)
+                ));
+            }
+
+            $this->items[$key] = $config;
+        }
     }
 }

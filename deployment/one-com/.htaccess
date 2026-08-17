@@ -1,0 +1,19 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Applicatiecode, configuratie, wachtrijen en dependencies zijn nooit
+    # rechtstreeks via HTTP bereikbaar.
+    RewriteRule ^(?:app|bin|bootstrap|config|routes|src|storage|vendor)(?:/|$) - [F,L,NC]
+    RewriteRule ^(?:composer\.(?:json|lock)|DEPLOYMENT\.md)$ - [F,L,NC]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+<FilesMatch "(^\.|\.example\.php$|composer\.(json|lock)$)">
+    Require all denied
+</FilesMatch>

@@ -4,23 +4,49 @@ declare(strict_types=1);
 
 namespace AEFS\Core;
 
-final class ServiceProvider
+abstract class ServiceProvider
 {
-    public static function register(): void
+    public function __construct(
+        protected readonly Application $app
+    ) {
+    }
+
+    /**
+     * Register bindings in the container.
+     */
+    public function register(): void
     {
-        Container::singleton(
-            Config::class,
-            fn() => Config::getInstance()
-        );
+    }
 
-        Container::singleton(
-            Database::class,
-            fn() => Database::getInstance()
-        );
+    /**
+     * Boot services after all providers have been registered.
+     */
+    public function boot(): void
+    {
+    }
 
-        Container::singleton(
-            Logger::class,
-            fn() => Logger::getInstance()
-        );
+    protected function bind(string $abstract, \Closure|string $concrete): void
+    {
+        $this->app->bind($abstract, $concrete);
+    }
+
+    protected function singleton(string $abstract, string|object $concrete): void
+    {
+        $this->app->singleton($abstract, $concrete);
+    }
+
+    protected function instance(string $abstract, object $instance): void
+    {
+        $this->app->instanceBinding($abstract, $instance);
+    }
+
+    protected function make(string $abstract): object
+    {
+        return $this->app->make($abstract);
+    }
+
+    protected function container(): Container
+    {
+        return $this->app->container();
     }
 }

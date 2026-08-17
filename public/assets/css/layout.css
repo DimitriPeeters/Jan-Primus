@@ -1,0 +1,175 @@
+html,
+body {
+    min-height: 100%;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    color: var(--color-text);
+    background: var(--color-background);
+}
+
+a {
+    color: var(--color-primary);
+}
+
+.guest-layout {
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.guest-layout__content {
+    width: 100%;
+    max-width: 460px;
+}
+
+.auth {
+    width: 100%;
+}
+
+.app-layout {
+    min-height: 100vh;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.app__main {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    margin-left: var(--sidebar-width);
+}
+
+.app__content {
+    flex: 1;
+    padding: 2rem;
+}
+
+.app-header {
+    position: sticky;
+    z-index: 50;
+    top: 0;
+    min-height: 72px;
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.app-header__content {
+    display: flex;
+    min-height: 72px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0 2rem;
+}
+
+.app-header__title {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.app-header__actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.app-header__user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.app-header__avatar {
+    display: flex;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    font-size: 1rem;
+    font-weight: 700;
+    background: var(--color-primary);
+    border-radius: 50%;
+}
+
+.app-header__identity {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.app-header__name {
+    color: var(--color-text);
+    font-size: 0.9rem;
+}
+
+.app-header__role {
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+}
+
+.app-header__logout-form {
+    margin: 0;
+}
+
+.app-header__logout-button {
+    min-height: 38px;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+    .app__main {
+        margin-left: 0;
+    }
+
+    .app__content {
+        padding: 1rem;
+    }
+
+    .app-header__content {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-header__content {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .app-header__actions {
+        width: 100%;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    .app-header__identity {
+        display: none;
+    }
+}

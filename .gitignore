@@ -1,0 +1,17 @@
+/vendor/
+/storage/logs/*
+/storage/cache/*
+/storage/sessions/*
+/storage/mail-attachments/*
+!/storage/mail-attachments/.gitkeep
+/config/local/mail.php
+/config/local/mail-recipients.php
+/config/local/app.php
+/config/local/database.php
+/build/
+/tmp/
+.env
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store

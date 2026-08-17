@@ -1,0 +1,47 @@
+svg{
+
+    width:20px;
+
+    height:20px;
+
+    display:inline-block;
+
+    vertical-align:middle;
+
+    stroke:currentColor;
+
+    fill:none;
+
+}
+
+.icon-sm{
+
+    width:16px;
+
+    height:16px;
+
+}
+
+.icon{
+
+    width:20px;
+
+    height:20px;
+
+}
+
+.icon-lg{
+
+    width:28px;
+
+    height:28px;
+
+}
+
+.icon-xl{
+
+    width:40px;
+
+    height:40px;
+
+}

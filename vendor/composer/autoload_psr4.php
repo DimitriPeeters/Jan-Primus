@@ -6,9 +6,8 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'AEFS\\Services\\' => array($baseDir . '/app/Services'),
-    'AEFS\\Repositories\\' => array($baseDir . '/app/Repositories'),
-    'AEFS\\Models\\' => array($baseDir . '/app/Models'),
-    'AEFS\\Controllers\\' => array($baseDir . '/app/Controllers'),
+    'Tests\\' => array($baseDir . '/tests'),
+    'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
+    'App\\' => array($baseDir . '/app'),
     'AEFS\\' => array($baseDir . '/src'),
 );

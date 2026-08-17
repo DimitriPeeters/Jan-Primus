@@ -8,7 +8,9 @@ use AEFS\Core\Config;
 use AEFS\Core\Database;
 use AEFS\Core\Logger;
 use AEFS\Core\ServiceProvider;
+use AEFS\Providers\AppServiceProvider;
 
+AppServiceProvider::register();
 ServiceProvider::register();
 Config::getInstance();
 Database::getInstance();

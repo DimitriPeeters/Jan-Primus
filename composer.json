@@ -1,13 +1,25 @@
 {
-    "name": "aefs/v2",
-    "type": "project",
-    "autoload": {
-        "psr-4": {
-            "AEFS\\": "src/",
-            "AEFS\\Controllers\\": "app/Controllers/",
-            "AEFS\\Models\\": "app/Models/",
-            "AEFS\\Services\\": "app/Services/",
-            "AEFS\\Repositories\\": "app/Repositories/"
-        }
+  "name": "aefs/aefs-v2",
+  "description": "AEFS v2 custom MVC framework",
+  "type": "project",
+  "require": {
+    "php": "^8.4",
+    "ext-pdo": "*",
+    "ext-zip": "*",
+    "phpmailer/phpmailer": "^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "AEFS\\": "src/",
+      "App\\": "app/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test:view": "php bin/test-view.php"
+  }
 }

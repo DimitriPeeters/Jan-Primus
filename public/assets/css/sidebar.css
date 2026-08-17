@@ -1,0 +1,123 @@
+/* Migrated compatibility stylesheet. */
+.sidebar {
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    width: var(--sidebar-width);
+    flex-direction: column;
+    overflow-y: auto;
+    color: var(--color-white);
+    background: #18181b;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar__brand {
+    padding: 1.5rem;
+    background: var(--color-primary);
+}
+
+.sidebar__brand-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    color: var(--color-white);
+    text-decoration: none;
+}
+
+.sidebar__logo {
+    display: block;
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.sidebar__brand-text {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.sidebar__navigation {
+    flex: 1;
+    padding: 1.25rem 0.85rem;
+}
+
+.sidebar__menu {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    gap: 0.3rem;
+    list-style: none;
+}
+
+.sidebar__item {
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar__link {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    padding: 0.7rem 0.9rem;
+    color: #d4d4d8;
+    text-decoration: none;
+    border-radius: var(--radius-medium);
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.sidebar__link:hover {
+    color: var(--color-white);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar__link--active {
+    color: var(--color-white);
+    background: var(--color-primary);
+}
+
+.sidebar__link-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.sidebar__footer {
+    padding: 1rem 1.5rem;
+    color: #a1a1aa;
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        min-height: auto;
+    }
+
+    .sidebar__navigation {
+        padding: 0.75rem;
+    }
+
+    .sidebar__menu {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .sidebar__link {
+        white-space: nowrap;
+    }
+
+    .sidebar__footer {
+        display: none;
+    }
+
+    .app {
+        flex-direction: column;
+    }
+}

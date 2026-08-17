@@ -1,9 +1,0 @@
-/vendor/
-/storage/logs/*
-/storage/cache/*
-/storage/sessions/*
-.env
-.idea/
-.vscode/
-Thumbs.db
-.DS_Store

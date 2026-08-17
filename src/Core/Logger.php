@@ -4,72 +4,108 @@ declare(strict_types=1);
 
 namespace AEFS\Core;
 
+use DateTimeImmutable;
 use RuntimeException;
 
 final class Logger
 {
-    private static ?Logger $instance = null;
-
     private string $logDirectory;
 
-    private function __construct()
-    {
-        $this->logDirectory = dirname(__DIR__, 2) . '/storage/logs';
+    public function __construct(
+        string $logDirectory
+    ) {
+        $this->logDirectory = rtrim($logDirectory, DIRECTORY_SEPARATOR);
 
-        if (!is_dir($this->logDirectory)) {
-
-            if (!mkdir($this->logDirectory, 0775, true)) {
-                throw new RuntimeException('Kan logmap niet aanmaken.');
-            }
-
+        if (!is_dir($this->logDirectory) && !mkdir($concurrentDirectory = $this->logDirectory, 0755, true) && !is_dir($concurrentDirectory)) {
+            throw new RuntimeException(sprintf(
+                'Unable to create log directory [%s].',
+                $this->logDirectory
+            ));
         }
     }
 
-    public static function getInstance(): Logger
+    public function emergency(string $message, array $context = []): void
     {
-        if (self::$instance === null) {
-            self::$instance = new Logger();
-        }
-
-        return self::$instance;
+        $this->write('EMERGENCY', $message, $context);
     }
 
-    private function write(string $level, string $message): void
+    public function alert(string $message, array $context = []): void
     {
-        $bestand = $this->logDirectory . '/'
-            . date('Y-m-d')
-            . '.log';
+        $this->write('ALERT', $message, $context);
+    }
 
-        $regel =
-            '[' . date('Y-m-d H:i:s') . '] '
-            . '[' . strtoupper($level) . '] '
-            . $message
-            . PHP_EOL;
+    public function critical(string $message, array $context = []): void
+    {
+        $this->write('CRITICAL', $message, $context);
+    }
 
-        file_put_contents(
-            $bestand,
-            $regel,
-            FILE_APPEND | LOCK_EX
+    public function error(string $message, array $context = []): void
+    {
+        $this->write('ERROR', $message, $context);
+    }
+
+    public function warning(string $message, array $context = []): void
+    {
+        $this->write('WARNING', $message, $context);
+    }
+
+    public function notice(string $message, array $context = []): void
+    {
+        $this->write('NOTICE', $message, $context);
+    }
+
+    public function info(string $message, array $context = []): void
+    {
+        $this->write('INFO', $message, $context);
+    }
+
+    public function debug(string $message, array $context = []): void
+    {
+        $this->write('DEBUG', $message, $context);
+    }
+
+    public function log(string $level, string $message, array $context = []): void
+    {
+        $this->write(strtoupper($level), $message, $context);
+    }
+
+    private function write(string $level, string $message, array $context): void
+    {
+        $date = new DateTimeImmutable();
+
+        $file = sprintf(
+            '%s%s%s.log',
+            $this->logDirectory,
+            DIRECTORY_SEPARATOR,
+            $date->format('Y-m-d')
         );
+
+        $line = sprintf(
+            "[%s] %-9s %s%s",
+            $date->format('Y-m-d H:i:s'),
+            $level,
+            $this->interpolate($message, $context),
+            PHP_EOL
+        );
+
+        file_put_contents($file, $line, FILE_APPEND | LOCK_EX);
     }
 
-    public function info(string $message): void
+    private function interpolate(string $message, array $context): string
     {
-        $this->write('INFO', $message);
-    }
+        $replace = [];
 
-    public function warning(string $message): void
-    {
-        $this->write('WARNING', $message);
-    }
+        foreach ($context as $key => $value) {
+            if (is_scalar($value) || $value === null) {
+                $replace['{' . $key . '}'] = (string) $value;
+            } else {
+                $replace['{' . $key . '}'] = json_encode(
+                    $value,
+                    JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                ) ?: '[unserializable]';
+            }
+        }
 
-    public function error(string $message): void
-    {
-        $this->write('ERROR', $message);
-    }
-
-    public function debug(string $message): void
-    {
-        $this->write('DEBUG', $message);
+        return strtr($message, $replace);
     }
 }

@@ -6,29 +6,35 @@ namespace AEFS\Core;
 
 final class View
 {
+    /**
+     * @param array<string,mixed> $data
+     */
     public static function render(string $view, array $data = []): void
     {
-        $bestand = dirname(__DIR__, 2)
-            . '/app/Views/'
+        $viewFile = dirname(__DIR__, 2)
+            . '/resources/views/'
             . str_replace('.', '/', $view)
             . '.php';
 
-        if (!file_exists($bestand)) {
-            throw new \RuntimeException(
-                "View '{$view}' niet gevonden."
-            );
+        if (!is_file($viewFile)) {
+            Response::notFound();
         }
 
-        extract($data);
+        extract($data, EXTR_SKIP);
 
         ob_start();
 
-        require $bestand;
+        require $viewFile;
 
         $content = ob_get_clean();
 
-        require dirname(__DIR__, 2) . '/app/Views/layout.php';
+        if ($content === false) {
+            $content = '';
+        }
 
-        exit;
+        $title ??= 'AEFS';
+
+        require dirname(__DIR__, 2)
+            . '/resources/views/layouts/app.php';
     }
 }

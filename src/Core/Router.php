@@ -4,73 +4,275 @@ declare(strict_types=1);
 
 namespace AEFS\Core;
 
+use AEFS\Core\Http\Request;
+use AEFS\Core\Http\Response;
 use RuntimeException;
-use AEFS\Core\Container;
 
 final class Router
 {
+    private RouteCollection $routes;
+
+    public function __construct(
+        private readonly Container $container,
+        ?RouteCollection $routes = null
+    ) {
+        $this->routes = $routes ?? new RouteCollection();
+    }
+
+    public function get(
+        string $uri,
+        mixed $action
+    ): Route {
+        return $this->map(
+            ['GET'],
+            $uri,
+            $action
+        );
+    }
+
+    public function post(
+        string $uri,
+        mixed $action
+    ): Route {
+        return $this->map(
+            ['POST'],
+            $uri,
+            $action
+        );
+    }
+
+    public function put(
+        string $uri,
+        mixed $action
+    ): Route {
+        return $this->map(
+            ['PUT'],
+            $uri,
+            $action
+        );
+    }
+
+    public function patch(
+        string $uri,
+        mixed $action
+    ): Route {
+        return $this->map(
+            ['PATCH'],
+            $uri,
+            $action
+        );
+    }
+
+    public function delete(
+        string $uri,
+        mixed $action
+    ): Route {
+        return $this->map(
+            ['DELETE'],
+            $uri,
+            $action
+        );
+    }
+
+    public function options(
+        string $uri,
+        mixed $action
+    ): Route {
+        return $this->map(
+            ['OPTIONS'],
+            $uri,
+            $action
+        );
+    }
+
+    public function any(
+        string $uri,
+        mixed $action
+    ): Route {
+        return $this->map(
+            [
+                'GET',
+                'POST',
+                'PUT',
+                'PATCH',
+                'DELETE',
+                'OPTIONS',
+            ],
+            $uri,
+            $action
+        );
+    }
+
     /**
-     * @var array<string,array<string,mixed>>
+     * @param list<string> $methods
      */
-    private array $routes = [];
+    public function map(
+        array $methods,
+        string $uri,
+        mixed $action
+    ): Route {
+        $route = new Route(
+            implode('|', $methods),
+            $uri,
+            $action
+        );
 
-    public function get(string $uri, callable|array $action): void
-    {
-        $this->add('GET', $uri, $action);
+        $this->routes->add($route);
+
+        return $route;
     }
 
-    public function post(string $uri, callable|array $action): void
+    public function dispatch(Request $request): Response
     {
-        $this->add('POST', $uri, $action);
-    }
+        foreach ($this->routes as $route) {
+            if (!$route instanceof Route) {
+                continue;
+            }
 
-    public function put(string $uri, callable|array $action): void
-    {
-        $this->add('PUT', $uri, $action);
-    }
+            if (!$route->allows($request->method())) {
+                continue;
+            }
 
-    public function delete(string $uri, callable|array $action): void
-    {
-        $this->add('DELETE', $uri, $action);
-    }
+            $parameters = $route->compile(
+                $request->path()
+            );
 
-    private function add(string $method, string $uri, callable|array $action): void
-    {
-        $uri = '/' . trim($uri, '/');
+            if ($parameters === null) {
+                continue;
+            }
 
-        if ($uri === '//') {
-            $uri = '/';
+            $route->setParameters($parameters);
+            $request->setRouteParameters($parameters);
+
+            return $this->dispatchRoute(
+                $route,
+                $request
+            );
         }
 
-        $this->routes[$method][$uri] = $action;
+        return new Response(
+            '404 Not Found',
+            404,
+            [
+                'Content-Type' => 'text/plain; charset=UTF-8',
+            ]
+        );
     }
 
-    public function dispatch(string $method, string $uri): mixed
+    public function routes(): RouteCollection
     {
-        $uri = '/' . trim(parse_url($uri, PHP_URL_PATH) ?? '/', '/');
+        return $this->routes;
+    }
 
-        if ($uri === '//') {
-            $uri = '/';
-        }
+    private function dispatchRoute(
+        Route $route,
+        Request $request
+    ): Response {
+        $destination = function (Request $request) use ($route): Response {
+            return $this->dispatchAction(
+                $route,
+                $request
+            );
+        };
 
-        if (!isset($this->routes[$method][$uri])) {
-            Response::html('<h1>404 - Pagina niet gevonden</h1>',404);
-        }
+        $pipeline = array_reduce(
+            array_reverse($route->getMiddleware()),
+            function (
+                callable $next,
+                string $middlewareClass
+            ): callable {
+                return function (Request $request) use (
+                    $middlewareClass,
+                    $next
+                ): Response {
+                    $middleware = $this->container->get(
+                        $middlewareClass
+                    );
 
-        $action = $this->routes[$method][$uri];
+                    if (!method_exists($middleware, 'handle')) {
+                        throw new RuntimeException(
+                            sprintf(
+                                'Middleware [%s] heeft geen handle()-methode.',
+                                $middlewareClass
+                            )
+                        );
+                    }
+
+                    return $this->normalizeResponse(
+                        $middleware->handle(
+                            $request,
+                            $next
+                        )
+                    );
+                };
+            },
+            $destination
+        );
+
+        return $this->normalizeResponse(
+            $pipeline($request)
+        );
+    }
+
+    private function dispatchAction(
+        Route $route,
+        Request $request
+    ): Response {
+        $action = $route->action();
 
         if (is_callable($action)) {
-            return $action(new Request());
+            return $this->normalizeResponse(
+                $action($request)
+            );
         }
 
-if (is_array($action)) {
+        if (
+            is_array($action)
+            && count($action) === 2
+        ) {
+            [$controllerClass, $method] = $action;
 
-    [$controllerClass, $controllerMethod] = $action;
+            if (
+                !is_string($controllerClass)
+                || !is_string($method)
+            ) {
+                throw new RuntimeException(
+                    'Ongeldige controlleractie.'
+                );
+            }
 
-    $controller = Container::get($controllerClass);
+            $controller = $this->container->get(
+                $controllerClass
+            );
 
-    return $controller->$controllerMethod();
-}
-        throw new RuntimeException('Ongeldige route.');
+            if (!method_exists($controller, $method)) {
+                throw new RuntimeException(
+                    sprintf(
+                        'Controllermethode [%s::%s] bestaat niet.',
+                        $controllerClass,
+                        $method
+                    )
+                );
+            }
+
+            return $this->normalizeResponse(
+                $controller->{$method}($request)
+            );
+        }
+
+        throw new RuntimeException(
+            'Ongeldige routeactie.'
+        );
+    }
+
+    private function normalizeResponse(mixed $response): Response
+    {
+        if ($response instanceof Response) {
+            return $response;
+        }
+
+        return new Response(
+            (string) $response
+        );
     }
 }

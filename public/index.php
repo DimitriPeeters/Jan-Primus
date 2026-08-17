@@ -2,24 +2,28 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__) . '/bootstrap.php';
+use AEFS\Core\Application;
+use AEFS\Core\Http\Response;
 
-use AEFS\Core\Router;
+define('AEFS_START', microtime(true));
 
-$router = new Router();
+$appConfiguration = require dirname(__DIR__)
+    . DIRECTORY_SEPARATOR
+    . 'config'
+    . DIRECTORY_SEPARATOR
+    . 'app.php';
+$isProduction = ($appConfiguration['environment'] ?? 'production')
+    === 'production';
 
-require dirname(__DIR__) . '/routes/web.php';
+error_reporting(E_ALL);
+ini_set('display_errors', $isProduction ? '0' : '1');
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+require dirname(__DIR__) . '/vendor/autoload.php';
 
-// verwijder de projectmap uit de URL bij lokale ontwikkeling
-$uri = str_replace('/aefs-v2/public', '', $uri);
+/** @var Application $app */
+$app = require dirname(__DIR__) . '/bootstrap/app.php';
 
-if ($uri === '') {
-    $uri = '/';
-}
+/** @var Response $response */
+$response = $app->run();
 
-$router->dispatch(
-    $_SERVER['REQUEST_METHOD'],
-    $uri
-);
+$response->send();
