@@ -289,6 +289,15 @@ final class SettingsService
                 $fromAddress,
                 FILTER_VALIDATE_EMAIL
             ) !== false;
+        $schedulerEnabled = (bool) $this->config->get(
+            'mail_worker.enabled',
+            false
+        );
+        $schedulerToken = trim(
+            (string) $this->config->get('mail_worker.token', '')
+        );
+        $schedulerConfigured = $schedulerEnabled
+            && preg_match('/^[a-f0-9]{64}$/i', $schedulerToken) === 1;
 
         return [
             'mail' => [
@@ -310,6 +319,11 @@ final class SettingsService
                     'emails' => $this->recipientPolicy->allowedEmails(),
                 ],
                 'totals' => $this->mailings->totals(),
+                'scheduler' => [
+                    'enabled' => $schedulerEnabled,
+                    'configured' => $schedulerConfigured,
+                    'https_required' => true,
+                ],
             ],
             'system' => [
                 'environment' => (string) $this->config->get(

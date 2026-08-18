@@ -21,6 +21,43 @@ Plan dit commando in productie elke minuut in via cron of de scheduler van de
 hostingomgeving. Gelijktijdige workers zijn toegestaan; ontvangers worden met
 database-rowlocking geclaimd.
 
+## Externe scheduler op SFTP-only hosting
+
+Wanneer de productiehosting geen SSH of server-cron aanbiedt, kan een externe
+HTTPS-scheduler dezelfde queueprocessor activeren via:
+
+```text
+POST /internal/mail-worker/process
+X-AEFS-Worker-Token: <256-bit token>
+```
+
+Deze route is standaard uitgeschakeld. Ze wordt uitsluitend actief via het
+genegeerde `config/local/mail_worker.php`. Maak dat bestand lokaal aan met:
+
+```powershell
+php bin/generate-mail-worker-config.php
+```
+
+De gegenereerde token bestaat uit 64 willekeurige hextekens. De token mag
+uitsluitend in de HTTPS-header staan: nooit in de URL, querystring, requestbody,
+repository of schermafbeelding. Een request zonder geldige token, via HTTP of
+met een ongeldige configuratie bereikt de `MailQueueProcessor` niet.
+
+Voor cron-job.org of een gelijkwaardige dienst:
+
+```text
+Frequentie: iedere minuut
+Methode: POST
+URL: https://alleventsforeversure.be/internal/mail-worker/process
+Headernaam: X-AEFS-Worker-Token
+Headerwaarde: token uit config/local/mail_worker.php
+Body: leeg
+```
+
+Schakel foutmeldingen bij opeenvolgende mislukte runs in. De JSON-response
+bevat alleen veilige aantallen en nooit mailinhoud, ontvangers of geheimen. De
+browser hoeft ook bij deze fallback niet open te blijven.
+
 De browser hoeft na het inplannen van een mailing niet open te blijven. De
 webrequest bewaart alle ontvangers eerst in de database; de worker handelt de
 feitelijke verzending daarna af. De server, PHP en database moeten wel actief

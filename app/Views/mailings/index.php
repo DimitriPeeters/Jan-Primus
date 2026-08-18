@@ -29,7 +29,7 @@ $this->extend('layouts.app', ['title' => $title ?? 'Mailings']);
 
     <?php if ($recipientRestriction['active']): ?>
         <div class="alert alert-warning" role="status">
-            <strong>Lokale mailtestmodus actief.</strong>
+            <strong>Alfa-mailtestbeperking actief.</strong>
             Automatische en manuele mailings worden uitsluitend ingepland voor:
             <?= $this->escape(implode(', ', $recipientRestriction['emails'])) ?>.
         </div>

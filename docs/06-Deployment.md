@@ -103,26 +103,77 @@ Voor `mail.php` blijven SMTP-wachtwoorden buiten Git. Zet de lokale
 wel eerst een gecontroleerde allowlist worden geplaatst, maar die lijst moet
 bewust worden beoordeeld vóór echte bulkmail wordt vrijgegeven.
 
-## 5. Database importeren
+## 5. Bestaande one.com-data veilig samenvoegen
 
 Voor een volledig nieuwe, lege installatie is `database/database.sql` de
 actuele schema-baseline. Deze maakt geen database aan, verandert geen
 databasegebruiker en bevat geen leden- of gebruikersdata.
 
-Voor de echte migratie naar one.com:
+De bestaande one.com-database bevat nog gegevens uit de oude frontend en mag
+daarom niet eenvoudig worden vervangen door alleen de lokale database. Bouw de
+private cutoverexport lokaal met:
+
+```powershell
+php database/migrations/20260818_000008_build_onecom_cutover.php `
+  --onecom-export=build/onecom-before-aefs-20260818.sql `
+  --legacy-project=D:/AEFS_ledenadministratie.zip `
+  --replace-target
+```
+
+De builder:
+
+- gebruikt de actuele lokale `aefs_v2` als definitieve schema- en
+  applicatiebasis;
+- voegt one.com-leden, gebruikers, inschrijvingen, aanwezigheid,
+  contactberichten en meldingen data-behoudend samen;
+- behoudt conflicterende bron-ID's waar mogelijk en maakt anders uitsluitend
+  interne, gecontroleerde mappings;
+- archiveert de oude shifttabellen onder
+  `*_onecom_legacy_20260818`, maar activeert `event_shifts`,
+  `shift_toewijzingen` en `shift_registrations` niet opnieuw;
+- verwijdert bij de uiteindelijke import pas daarna de obsolete actieve
+  legacytabellen en het niet te behouden `mail_logs`;
+- versleutelt alle nationale identificatienummers en rekeningnummers met de
+  stabiele AEFS-`app_key`;
+- importeert eerst de oude one.com-export in een aparte testdatabase, vervangt
+  die vervolgens volledig door het eindresultaat en controleert aantallen,
+  statussen, duplicaten, verweesde relaties, shifttijden, encryptie en foreign
+  keys. Daardoor worden ook conflicten met oude, incompatibele tabellen vóór de
+  live-import ontdekt.
+
+De one.com-export, het oude project met de legacy-encryptiesleutel en alle
+gegenereerde bestanden blijven lokaal en privé. Ze mogen niet worden gecommit,
+gepusht of in het webpakket terechtkomen. Een geslaagde run levert op:
+
+```text
+build/aefs-v2-one-com-cutover.sql
+build/aefs-v2-one-com-cutover-report.json
+```
+
+Controleer dat de SHA-256 van de dump overeenkomt met het rapport. De builder
+mag alleen tijdelijke databases verwijderen waarvan de naam met
+`aefs_v2_cutover_` begint; de lokale brondatabase wordt uitsluitend gelezen.
+
+Voor de echte migratie naar de enige one.com-database:
 
 1. stop lokale mutaties tijdens het afgesproken cutovervenster;
-2. exporteer de actuele lokale database volledig via phpMyAdmin of
-   `mysqldump` naar een bestand onder `build/`;
-3. versleutel/beveilig die export tijdens opslag en overdracht;
-4. selecteer in one.com phpMyAdmin de lege doeldatabase en importeer de
-   volledige privé-export;
-5. verwijder de overdrachtskopie pas nadat import, applicatietest en aparte
+2. zet ook de oude frontend in onderhoud zodat daar geen registratie meer kan
+   wijzigen;
+3. maak een nieuwe one.com-back-up en vervang daarmee het lokale
+   `onecom-before-aefs-20260818.sql`;
+4. voer de cutoverbuilder opnieuw uit en controleer het JSON-rapport;
+5. bewaar de pre-cutover one.com-back-up op een tweede, beveiligde locatie;
+6. selecteer in one.com phpMyAdmin de bestaande database en importeer
+   `aefs-v2-one-com-cutover.sql`; de dump schakelt foreign-keycontroles
+   tijdelijk uit, verwijdert eerst alle te vervangen tabellen en bouwt daarna
+   het volledig samengevoegde en geteste schema op;
+7. verwijder de overdrachtskopie pas nadat import, applicatietest en aparte
    back-up succesvol zijn afgerond.
 
-De op 17 augustus 2026 voorbereide lokale momentopname staat als genegeerd
-bestand in `build/aefs-v2-live-database-20260817.sql`. Maak bij de definitieve
-cutover altijd een nieuwe export, zodat tussentijdse wijzigingen mee zijn.
+Gebruik nooit `database/database.sql` of alleen
+`aefs-v2-live-database-20260817.sql` voor deze cutover: beide missen de
+samengevoegde one.com-gegevens. Voer nooit een oudere private cutoverdump over
+recentere livegegevens uit.
 
 Na import minimaal controleren:
 
@@ -136,8 +187,8 @@ SELECT status, COUNT(*) FROM event_inschrijvingen GROUP BY status;
 SELECT status, COUNT(*) FROM shift_inschrijvingen GROUP BY status;
 ```
 
-Vergelijk de resultaten met de brondatabase van exact hetzelfde cutovermoment.
-Voer nooit een oude export over recentere livegegevens uit.
+Vergelijk de resultaten met `table_counts` en de statusverdelingen in het
+JSON-rapport van exact hetzelfde cutovermoment.
 
 ## 6. Schrijfrechten en mailworker
 
@@ -158,9 +209,38 @@ De browser verstuurt geen mails zelf. Plan op de server iedere minuut:
 php bin/process-mail-queue.php --limit=25
 ```
 
-Als het one.com-abonnement geen server-side scheduler of SSH biedt, moet vóór
-het vrijgeven van automatische mail een veilige externe scheduleroplossing
-worden gekozen. Stel geen publiek, onbeveiligd worker-URL in.
+### one.com zonder SSH of cron
+
+Gebruik op het SFTP-only pakket de beveiligde externe scheduleringang. Maak de
+genegeerde productieconfiguratie lokaal aan, bijvoorbeeld rechtstreeks in de
+uitgepakte uploadmap:
+
+```powershell
+php bin/generate-mail-worker-config.php `
+    --output="build/aefs-v2-one-com-upload/config/local/mail_worker.php"
+```
+
+Upload `config/local/mail_worker.php` daarna via SFTP. Het bestand bevat een
+geheime 256-bit token en mag niet worden gecommit, gemaild of gedeeld.
+
+Configureer de externe scheduler iedere minuut met:
+
+```text
+Methode: POST
+URL: https://alleventsforeversure.be/internal/mail-worker/process
+Header: X-AEFS-Worker-Token: <token uit config/local/mail_worker.php>
+Body: leeg
+```
+
+Gebruik uitsluitend HTTPS, plaats de token nooit in de URL en bewaar geen
+requestheaders in publiek toegankelijke logs. De endpoint verwerkt dezelfde
+`MailQueueProcessor` als de CLI-worker, met dezelfde batchlimiet, retries en
+database-locking. Een ontbrekende of foutieve token wordt afgewezen voordat de
+wachtrij wordt aangeraakt.
+
+De instellingenpagina toont alleen of de beveiligde scheduleringang correct is
+geconfigureerd; controleer daarnaast de uitvoeringshistoriek en
+foutmeldingen van de externe scheduler.
 
 ## 7. Alfa-smoketest
 

@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use AEFS\Core\Auth;
 use AEFS\Core\Config;
+use AEFS\Core\Http\JsonResponse;
 use AEFS\Core\Http\Request;
 use AEFS\Core\Http\Response;
 use AEFS\Core\Http\UploadedFile;
@@ -13,6 +14,7 @@ use AEFS\Core\Session;
 use AEFS\Core\View\Helper\CsrfHelper;
 use AEFS\Core\View\ViewFactory;
 use App\Http\Requests\MailingRequest;
+use App\Services\MailQueueProcessor;
 use App\Services\MailService;
 use DomainException;
 use Throwable;
@@ -24,7 +26,8 @@ final class MailController extends BaseController
         Request $request,
         private readonly MailService $service,
         private readonly CsrfHelper $csrf,
-        private readonly Config $config
+        private readonly Config $config,
+        private readonly MailQueueProcessor $queueProcessor
     ) {
         parent::__construct($views, $request);
     }
@@ -46,6 +49,39 @@ final class MailController extends BaseController
                     ->recipientRestriction(),
             ]
         );
+    }
+
+    public function processScheduledQueue(): Response
+    {
+        try {
+            $result = $this->queueProcessor->process();
+
+            return new JsonResponse(
+                [
+                    'success' => true,
+                    'message' => 'De mailwachtrij werd verwerkt.',
+                    'processed' => $result['processed'],
+                    'sent' => $result['sent'],
+                    'failed' => $result['failed'],
+                ],
+                200,
+                $this->schedulerResponseHeaders()
+            );
+        } catch (Throwable $throwable) {
+            error_log(sprintf(
+                'AEFS mailworker schedulerfout (%s).',
+                $throwable::class
+            ));
+
+            return new JsonResponse(
+                [
+                    'success' => false,
+                    'message' => 'De mailwachtrij kon niet worden verwerkt.',
+                ],
+                503,
+                $this->schedulerResponseHeaders()
+            );
+        }
     }
 
     public function create(): Response
@@ -228,5 +264,16 @@ final class MailController extends BaseController
                 $this->config->get('mail.from_address', ''),
                 FILTER_VALIDATE_EMAIL
             ) !== false;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function schedulerResponseHeaders(): array
+    {
+        return [
+            'Cache-Control' => 'no-store, private',
+            'X-Content-Type-Options' => 'nosniff',
+        ];
     }
 }

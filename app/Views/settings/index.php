@@ -244,10 +244,31 @@ $system = $status['system'];
                             <?= (int) $mail['max_attempts'] ?> pogingen
                         </strong>
                     </div>
+                    <div>
+                        <span>Achtergrondworker</span>
+                        <strong
+                            class="settings-status settings-status--<?= $mail['scheduler']['configured']
+                                ? 'ok'
+                                : 'warning' ?>"
+                        >
+                            <?php if ($mail['scheduler']['configured']): ?>
+                                Scheduleringang gereed
+                            <?php elseif ($mail['scheduler']['enabled']): ?>
+                                Configuratie ongeldig
+                            <?php else: ?>
+                                Niet geconfigureerd
+                            <?php endif; ?>
+                        </strong>
+                    </div>
                 </div>
                 <footer class="card__footer settings-note">
-                    De webpagina start zelf geen achtergrondworker. De lokale Windows-taak of latere server-cron
-                    moet actief blijven om de wachtrij na het sluiten van AEFS te verwerken.
+                    <?php if ($mail['scheduler']['configured']): ?>
+                        De beveiligde HTTPS-ingang is gereed. De externe scheduler moet daarnaast actief blijven
+                        om de wachtrij na het sluiten van AEFS te verwerken.
+                    <?php else: ?>
+                        De webpagina start zelf geen achtergrondworker. Een lokale taak, server-cron of beveiligde
+                        externe scheduler moet actief blijven om de wachtrij te verwerken.
+                    <?php endif; ?>
                 </footer>
             </section>
 

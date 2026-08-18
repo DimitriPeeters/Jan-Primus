@@ -28,7 +28,7 @@ $this->extend('layouts.app', ['title' => $title ?? $mailing->subject]);
 
     <?php if ($recipientRestriction['active']): ?>
         <div class="alert alert-warning" role="status">
-            Lokale mailtestmodus is actief; alleen expliciet toegestane
+            De alfa-mailtestbeperking is actief; alleen expliciet toegestane
             testadressen kunnen worden afgeleverd.
         </div>
     <?php endif; ?>

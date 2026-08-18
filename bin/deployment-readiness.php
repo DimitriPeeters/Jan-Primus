@@ -149,6 +149,25 @@ $check(
     'mail.application_url moet de publieke HTTPS-URL bevatten.'
 );
 
+$mailWorkerEnabled = (bool) $config->get(
+    'mail_worker.enabled',
+    false
+);
+$mailWorkerToken = trim(
+    (string) $config->get('mail_worker.token', '')
+);
+
+$check(
+    $mailWorkerEnabled,
+    'De beveiligde externe mailworker-ingang is ingeschakeld.',
+    'De externe mailworker-ingang is niet ingeschakeld.'
+);
+$check(
+    preg_match('/^[a-f0-9]{64}$/i', $mailWorkerToken) === 1,
+    'De externe mailworker gebruikt een sterke 256-bit token.',
+    'De externe mailworker-token ontbreekt of is ongeldig.'
+);
+
 fwrite(
     $failures === 0 ? STDOUT : STDERR,
     sprintf(

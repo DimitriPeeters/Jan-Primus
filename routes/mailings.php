@@ -5,8 +5,17 @@ declare(strict_types=1);
 use App\Controllers\MailController;
 use App\Middleware\AdminMiddleware;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\MailWorkerSchedulerMiddleware;
 
 /** @var AEFS\Core\Router $router */
+
+$router
+    ->post(
+        '/internal/mail-worker/process',
+        [MailController::class, 'processScheduledQueue']
+    )
+    ->middleware(MailWorkerSchedulerMiddleware::class)
+    ->name('mailings.worker.process');
 
 $router
     ->get('/mailings', [MailController::class, 'index'])

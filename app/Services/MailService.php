@@ -164,7 +164,7 @@ final class MailService
 
             if (count($allowedMembers) !== count($members)) {
                 throw new DomainException(
-                    'Dit evenement kan in de lokale mailtestmodus niet worden geannuleerd omdat niet alle betrokken leden op de testontvangerslijst staan.'
+                    'Dit evenement kan met de actieve alfa-mailtestbeperking niet worden geannuleerd omdat niet alle betrokken leden op de testontvangerslijst staan.'
                 );
             }
         }

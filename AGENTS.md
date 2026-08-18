@@ -1943,6 +1943,21 @@ appropriate Gmail/provider quota settings, and operational monitoring. Do not
 assume background delivery is active in a new environment merely because the
 worker code exists.
 
+On a production host without cron or SSH, the established fallback is the
+machine-authenticated POST endpoint:
+
+```text
+/internal/mail-worker/process
+```
+
+It remains disabled unless an ignored `config/local/mail_worker.php` contains
+both `enabled=true` and a randomly generated 256-bit token. The external
+scheduler must send that token only through the `X-AEFS-Worker-Token` HTTPS
+header. Never place it in a URL, browser form, tracked file, log or response.
+The route must keep using `MailQueueProcessor`; it must not duplicate queue or
+SMTP logic and it must never use normal user sessions as machine
+authentication.
+
 A committed domain mutation must not be reported as failed solely because SMTP
 is temporarily unavailable. Do not send mail from views, repositories, or
 ad-hoc controller code.
@@ -2286,6 +2301,26 @@ operational/personal data. A full cutover export belongs only in a protected,
 ignored local location such as `build/` and must never be committed or pushed.
 Generate a fresh private export at the final cutover moment.
 
+When existing one.com data must be retained, do not deploy the local database
+dump directly. Build the private merged export with:
+
+```text
+database/migrations/20260818_000008_build_onecom_cutover.php
+```
+
+The builder uses the current local database as the definitive application
+baseline, merges the backed-up one.com data in temporary local databases,
+converts sensitive member values to the stable current `enc:v1:` format,
+archives rather than reactivates legacy shift tables, and verifies a fresh
+replacement import over a temporary copy of the old one.com schema. The final
+export first removes every table it replaces while foreign-key checks are
+disabled, and explicitly removes obsolete active legacy shift tables and
+`mail_logs` only after their required shift data has been archived and merged.
+Its SQL export and JSON report belong only under ignored `build/`.
+The legacy project ZIP and its historical encryption key remain private local
+inputs and must never be committed, packaged or uploaded. The real local and
+one.com databases must never be used as temporary targets by this builder.
+
 The one.com deployment package is generated with:
 
 ```text
@@ -2293,9 +2328,10 @@ bin/build-one-com-package.php
 ```
 
 It must not contain a database dump, local configuration, logs, sessions or
-mail attachments. The production mail worker remains a server-side CLI task;
-do not expose an unauthenticated HTTP worker merely because a hosting plan
-lacks cron or SSH.
+mail attachments. The server-side CLI worker remains the preferred production
+mechanism. On hosting without cron or SSH, only the established token-protected
+HTTPS scheduler endpoint may be used; never expose an unauthenticated HTTP
+worker.
 
 Recipient allowlists are environment-specific safety controls. A local or
 alpha allowlist must never be assumed to be the definitive production audience.
