@@ -98,6 +98,26 @@ $emptyText ??= 'Er zijn geen gebruikers die aan de zoekopdracht voldoen.';
                                         Goedkeuren
                                     </button>
                                 <?= $helpers->form->close() ?>
+
+                                <?= $helpers->form->open(
+                                    $helpers->url->to(
+                                        '/users/'
+                                        . $gebruiker->gebruikerId
+                                        . '/reject'
+                                    ),
+                                    'POST',
+                                    [
+                                        'class' => 'user-actions__form',
+                                        'onsubmit' => "return confirm('Deze registratie en alle bijbehorende persoonsgegevens definitief verwijderen?');",
+                                    ]
+                                ) ?>
+                                    <button
+                                        type="submit"
+                                        class="btn btn-secondary users-table__action"
+                                    >
+                                        Afkeuren
+                                    </button>
+                                <?= $helpers->form->close() ?>
                             <?php endif; ?>
 
                             <?php if (!$gebruiker->isPending()): ?>

@@ -34,6 +34,11 @@ $router
     ->name('users.approve');
 
 $router
+    ->post('/users/{id}/reject', [UserController::class, 'reject'])
+    ->middleware(...$userMiddleware)
+    ->name('users.reject');
+
+$router
     ->post('/users/{id}/update', [UserController::class, 'update'])
     ->middleware(...$userMiddleware)
     ->name('users.update');

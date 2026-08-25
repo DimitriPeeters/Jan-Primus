@@ -22,7 +22,7 @@ $this->extend(
             </h1>
 
             <p class="member-form-page__subtitle">
-                Voeg een nieuw lid toe aan AEFS Eventbeheer.
+                Voeg een lid en het bijbehorende gebruikersaccount toe aan Ledenbeheer.
             </p>
         </div>
 

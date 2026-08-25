@@ -7,11 +7,13 @@ namespace App\Controllers;
 use AEFS\Core\Http\Request;
 use AEFS\Core\Http\Response;
 use AEFS\Core\Session;
+use AEFS\Core\View\Helper\CsrfHelper;
 use AEFS\Core\View\ViewFactory;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use App\Services\AuditLogService;
 use App\Services\UserService;
+use RuntimeException;
 use Throwable;
 
 final class UserController extends BaseController
@@ -20,7 +22,8 @@ final class UserController extends BaseController
         ViewFactory $views,
         Request $request,
         private readonly UserService $users,
-        private readonly AuditLogService $auditLog
+        private readonly AuditLogService $auditLog,
+        private readonly CsrfHelper $csrf
     ) {
         parent::__construct(
             $views,
@@ -135,6 +138,7 @@ final class UserController extends BaseController
         );
 
         try {
+            $this->validateCsrf($input);
             $request = new UserRequest($input);
 
             $this->users->update(
@@ -172,12 +176,33 @@ final class UserController extends BaseController
     public function approve(): Response
     {
         $id = $this->routeId();
+        $input = $this->request()->request->all();
 
         try {
+            $this->validateCsrf($input);
             $this->users->approve($id);
 
             $this->success(
                 'De registratie werd goedgekeurd. Het account is nu actief.'
+            );
+        } catch (Throwable $throwable) {
+            $this->error($throwable->getMessage());
+        }
+
+        return $this->redirect('/users');
+    }
+
+    public function reject(): Response
+    {
+        $id = $this->routeId();
+        $input = $this->request()->request->all();
+
+        try {
+            $this->validateCsrf($input);
+            $this->users->reject($id);
+
+            $this->success(
+                'De registratie werd afgekeurd en de persoonsgegevens werden verwijderd.'
             );
         } catch (Throwable $throwable) {
             $this->error($throwable->getMessage());
@@ -208,6 +233,20 @@ final class UserController extends BaseController
             'id',
             0
         );
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     */
+    private function validateCsrf(array $input): void
+    {
+        $token = $input['_token'] ?? null;
+
+        if (!is_string($token) || !$this->csrf->validate($token)) {
+            throw new RuntimeException(
+                'De beveiligingstoken is ongeldig of verlopen. Probeer opnieuw.'
+            );
+        }
     }
 
     private function notFound(): Response

@@ -369,6 +369,14 @@ final class MemberRepository
         ]);
     }
 
+    public function delete(int $id): void
+    {
+        $statement = $this->database->prepare(
+            'DELETE FROM leden WHERE lid_id = :id'
+        );
+        $statement->execute(['id' => $id]);
+    }
+
     /**
      * @param array<int, array<string, mixed>> $rows
      *

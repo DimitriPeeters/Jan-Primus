@@ -19,6 +19,16 @@ $router
     ->name('members.index');
 
 $router
+    ->get('/members/create', [MemberController::class, 'create'])
+    ->middleware(...$memberMiddleware)
+    ->name('members.create');
+
+$router
+    ->post('/members', [MemberController::class, 'store'])
+    ->middleware(...$memberMiddleware)
+    ->name('members.store');
+
+$router
     ->get('/members/{id}', [MemberController::class, 'show'])
     ->middleware(...$memberMiddleware)
     ->name('members.show');

@@ -227,6 +227,13 @@ $this->extend(
             </p>
         </div>
 
+        <div class="members-page__actions">
+            <a href="<?= $this->escape($helpers->url->to('/members/create')) ?>"
+               class="btn btn-primary">
+                Nieuw lid
+            </a>
+        </div>
+
     </header>
 
     <form

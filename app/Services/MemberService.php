@@ -7,6 +7,7 @@ namespace App\Services;
 use AEFS\Core\Auth;
 use AEFS\Core\Database;
 use App\Models\Member;
+use App\Models\User;
 use App\Repositories\MemberRepository;
 use App\Repositories\UserRepository;
 use App\Validators\MemberValidator;
@@ -50,6 +51,82 @@ final class MemberService
         }
 
         return $this->members->find($id);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function create(array $data): int
+    {
+        $this->validator->validate($data);
+
+        $data = $this->sanitize($data);
+        $email = $data['email'];
+        $password = (string) ($data['password'] ?? '');
+        $passwordConfirmation = (string) ($data['password_confirmation'] ?? '');
+        $role = trim((string) ($data['rol'] ?? User::ROLE_MEMBER));
+
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Een geldig e-mailadres is verplicht.');
+        }
+
+        if ($this->users->findByEmail($email) !== null) {
+            throw new InvalidArgumentException('Dit e-mailadres is reeds in gebruik.');
+        }
+
+        if (strlen($password) < 8) {
+            throw new InvalidArgumentException(
+                'Het initiële wachtwoord moet minstens 8 tekens bevatten.'
+            );
+        }
+
+        if ($password !== $passwordConfirmation) {
+            throw new InvalidArgumentException('De wachtwoorden komen niet overeen.');
+        }
+
+        if (!in_array($role, [User::ROLE_ADMIN, User::ROLE_MEMBER], true)) {
+            throw new InvalidArgumentException('Ongeldige gebruikersrol.');
+        }
+
+        $data['toegetreden_op'] = $data['actief'] ? date('Y-m-d') : null;
+        $data['uitgetreden_op'] = null;
+
+        return $this->database->transaction(
+            function () use ($data, $email, $password, $role): int {
+                $memberId = $this->members->create($data);
+                $userId = $this->users->create([
+                    'lid_id' => $memberId,
+                    'email' => $email,
+                    'password' => $password,
+                    'rol' => $role,
+                    'goedkeuringsstatus' => User::APPROVAL_APPROVED,
+                    'goedgekeurd_op' => date('Y-m-d H:i:s'),
+                    'actief' => $data['actief'],
+                    'mail_blacklist' => false,
+                ]);
+
+                $this->auditLog->created(
+                    entity: 'member',
+                    id: $memberId,
+                    userId: Auth::id(),
+                    values: $this->auditValues($data)
+                );
+                $this->auditLog->created(
+                    entity: 'user',
+                    id: $userId,
+                    userId: Auth::id(),
+                    values: [
+                        'lid_id' => $memberId,
+                        'email' => $email,
+                        'rol' => $role,
+                        'goedkeuringsstatus' => User::APPROVAL_APPROVED,
+                        'actief' => $data['actief'],
+                    ]
+                );
+
+                return $memberId;
+            }
+        );
     }
 
     /**

@@ -182,6 +182,57 @@ final class UserService
         );
     }
 
+    public function reject(int $id): void
+    {
+        $user = $this->find($id);
+
+        if ($user === null) {
+            throw new InvalidArgumentException('Gebruiker niet gevonden.');
+        }
+
+        if (!$user->isPending()) {
+            throw new InvalidArgumentException(
+                'Alleen een wachtende registratie kan worden afgekeurd.'
+            );
+        }
+
+        $member = $this->members->find($user->lidId);
+
+        $this->database->transaction(
+            function () use ($user): void {
+                $this->users->delete($user->gebruikerId);
+                $this->members->delete($user->lidId);
+            }
+        );
+
+        $this->auditLog->deleted(
+            entity: 'user',
+            id: $user->gebruikerId,
+            userId: Auth::id(),
+            oldValues: [
+                'lid_id' => $user->lidId,
+                'email' => $user->email,
+                'rol' => $user->rol,
+                'goedkeuringsstatus' => $user->goedkeuringsstatus,
+                'actief' => $user->actief,
+            ]
+        );
+
+        if ($member !== null) {
+            $this->auditLog->deleted(
+                entity: 'member',
+                id: $member->lidId,
+                userId: Auth::id(),
+                oldValues: [
+                    'voornaam' => $member->voornaam,
+                    'achternaam' => $member->achternaam,
+                    'email' => $user->email,
+                    'actief' => $member->actief,
+                ]
+            );
+        }
+    }
+
     /**
      * @param array<string, mixed> $data
      */

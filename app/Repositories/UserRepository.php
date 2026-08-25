@@ -332,6 +332,14 @@ final class UserRepository extends BaseRepository
         ]);
     }
 
+    public function delete(int $id): void
+    {
+        $statement = $this->database->prepare(
+            'DELETE FROM gebruikers WHERE gebruiker_id = :id'
+        );
+        $statement->execute(['id' => $id]);
+    }
+
     public function issuePasswordResetToken(
         int $userId,
         string $tokenHash
