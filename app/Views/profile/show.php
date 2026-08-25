@@ -23,6 +23,11 @@ $display = static function (mixed $value): string {
 $birthDate = BelgianDateTime::formatDate(
     $lid->geboortedatum
 );
+$genderLabel = [
+    'M' => 'Man',
+    'V' => 'Vrouw',
+    'X' => 'X',
+][$lid->geslacht ?? ''] ?? $display($lid->geslacht);
 
 $this->extend(
     'layouts.app',
@@ -87,7 +92,7 @@ $this->extend(
                 </tr>
                 <tr>
                     <th scope="row">Geslacht</th>
-                    <td><?= $this->escape($display($lid->geslacht)) ?></td>
+                    <td><?= $this->escape($genderLabel) ?></td>
                 </tr>
                 </tbody>
             </table>
@@ -151,6 +156,18 @@ $this->extend(
                 <tr>
                     <th scope="row">Lidstatus</th>
                     <td><?= $lid->actief ? 'Actief' : 'Inactief' ?></td>
+                </tr>
+                <tr>
+                    <th scope="row">Toegetreden op</th>
+                    <td><?= $this->escape(
+                        BelgianDateTime::formatDate($lid->toegetredenOp)
+                    ) ?></td>
+                </tr>
+                <tr>
+                    <th scope="row">Uitgetreden op</th>
+                    <td><?= $this->escape(
+                        BelgianDateTime::formatDate($lid->uitgetredenOp)
+                    ) ?></td>
                 </tr>
                 <tr>
                     <th scope="row">GDPR-toestemming</th>

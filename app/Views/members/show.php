@@ -34,6 +34,11 @@ $displayValue = static function (mixed $value): string {
 $birthDate = BelgianDateTime::formatDate(
     $lid->geboortedatum
 );
+$genderLabel = [
+    'M' => 'Man',
+    'V' => 'Vrouw',
+    'X' => 'X',
+][$lid->geslacht ?? ''] ?? $displayValue($lid->geslacht);
 
 $this->extend(
     'layouts.app',
@@ -365,7 +370,7 @@ $this->extend(
                         <th scope="row">Geslacht</th>
                         <td>
                             <?= $this->escape(
-                                $displayValue($lid->geslacht)
+                                $genderLabel
                             ) ?>
                         </td>
                     </tr>
@@ -455,6 +460,24 @@ $this->extend(
                                     Inactief
                                 </span>
                             <?php endif; ?>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Toegetreden op</th>
+                        <td>
+                            <?= $this->escape(
+                                BelgianDateTime::formatDate($lid->toegetredenOp)
+                            ) ?>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row">Uitgetreden op</th>
+                        <td>
+                            <?= $this->escape(
+                                BelgianDateTime::formatDate($lid->uitgetredenOp)
+                            ) ?>
                         </td>
                     </tr>
 

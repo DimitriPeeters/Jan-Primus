@@ -102,7 +102,7 @@ $this->extend(
                 </label>
 
                 <label class="profile-form__field">
-                    <span>E-mailadres</span>
+                    <span>E-mailadres *</span>
                     <input
                         type="email"
                         name="email"
@@ -110,12 +110,13 @@ $this->extend(
                             'email',
                             $lid->email
                         )) ?>"
+                        required
                         autocomplete="email"
                     >
                 </label>
 
                 <label class="profile-form__field">
-                    <span>Telefoon</span>
+                    <span>Telefoon *</span>
                     <input
                         type="tel"
                         name="telefoon"
@@ -123,12 +124,13 @@ $this->extend(
                             'telefoon',
                             $lid->telefoon
                         )) ?>"
+                        required
                         autocomplete="tel"
                     >
                 </label>
 
                 <label class="profile-form__field">
-                    <span>Geboortedatum</span>
+                    <span>Geboortedatum *</span>
                     <input
                         type="text"
                         name="geboortedatum"
@@ -142,14 +144,15 @@ $this->extend(
                         placeholder="DD/mm/YYYY"
                         pattern="(?:0[1-9]|[12][0-9]|3[01])/(?:0[1-9]|1[0-2])/[0-9]{4}"
                         maxlength="10"
+                        required
                         autocomplete="bday"
                     >
                 </label>
 
                 <label class="profile-form__field">
-                    <span>Geslacht</span>
+                    <span>Geslacht *</span>
                     <?php $gender = $value('geslacht', $lid->geslacht); ?>
-                    <select name="geslacht">
+                    <select name="geslacht" required>
                         <option value="">— Selecteer —</option>
                         <option value="M"<?= $selected($gender, 'M') ?>>Man</option>
                         <option value="V"<?= $selected($gender, 'V') ?>>Vrouw</option>
@@ -166,7 +169,7 @@ $this->extend(
 
             <div class="profile-form__body profile-form__grid">
                 <label class="profile-form__field profile-form__field--full">
-                    <span>Straat en huisnummer</span>
+                    <span>Straat en huisnummer *</span>
                     <input
                         type="text"
                         name="straat"
@@ -174,12 +177,13 @@ $this->extend(
                             'straat',
                             $lid->straat
                         )) ?>"
+                        required
                         autocomplete="street-address"
                     >
                 </label>
 
                 <label class="profile-form__field">
-                    <span>Postcode</span>
+                    <span>Postcode *</span>
                     <input
                         type="text"
                         name="postcode"
@@ -187,12 +191,13 @@ $this->extend(
                             'postcode',
                             $lid->postcode
                         )) ?>"
+                        required
                         autocomplete="postal-code"
                     >
                 </label>
 
                 <label class="profile-form__field">
-                    <span>Gemeente</span>
+                    <span>Gemeente *</span>
                     <input
                         type="text"
                         name="gemeente"
@@ -200,12 +205,13 @@ $this->extend(
                             'gemeente',
                             $lid->gemeente
                         )) ?>"
+                        required
                         autocomplete="address-level2"
                     >
                 </label>
 
                 <label class="profile-form__field profile-form__field--full">
-                    <span>Land</span>
+                    <span>Land *</span>
                     <input
                         type="text"
                         name="land"
@@ -213,6 +219,7 @@ $this->extend(
                             'land',
                             $lid->land ?? 'België'
                         )) ?>"
+                        required
                         autocomplete="country-name"
                     >
                 </label>
@@ -226,7 +233,7 @@ $this->extend(
 
             <div class="profile-form__body profile-form__grid">
                 <label class="profile-form__field">
-                    <span>Nationaal identificatienummer</span>
+                    <span>Nationaal identificatienummer *</span>
                     <input
                         type="text"
                         name="rijksregisternummer"
@@ -235,6 +242,7 @@ $this->extend(
                             $lid->rijksregisternummer
                         )) ?>"
                         maxlength="100"
+                        required
                         autocomplete="off"
                     >
                     <small>
@@ -251,9 +259,9 @@ $this->extend(
                 </label>
 
                 <label class="profile-form__field">
-                    <span>T-shirtmaat</span>
+                    <span>T-shirtmaat *</span>
                     <?php $shirtSize = $value('tshirtmaat', $lid->tshirtmaat); ?>
-                    <select name="tshirtmaat">
+                    <select name="tshirtmaat" required>
                         <option value="">— Selecteer —</option>
                         <?php foreach (['XS', 'S', 'M', 'L', 'XL', 'XXL'] as $size): ?>
                             <option

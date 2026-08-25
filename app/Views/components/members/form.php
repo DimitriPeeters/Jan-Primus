@@ -251,6 +251,7 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         E-mailadres
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <input
@@ -261,6 +262,7 @@ $cancelUrl = $isEdit
                             (string) $value('email')
                         ) ?>"
                         class="member-form__control"
+                        required
                         autocomplete="email"
                     >
                 </div>
@@ -271,6 +273,7 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         Telefoon
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <input
@@ -281,6 +284,7 @@ $cancelUrl = $isEdit
                             (string) $value('telefoon')
                         ) ?>"
                         class="member-form__control"
+                        required
                         autocomplete="tel"
                     >
                 </div>
@@ -291,6 +295,7 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         Geboortedatum
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <input
@@ -304,6 +309,7 @@ $cancelUrl = $isEdit
                         placeholder="DD/mm/YYYY"
                         pattern="(?:0[1-9]|[12][0-9]|3[01])/(?:0[1-9]|1[0-2])/[0-9]{4}"
                         maxlength="10"
+                        required
                         autocomplete="bday"
                     >
                 </div>
@@ -314,12 +320,14 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         Geslacht
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <select
                         id="geslacht"
                         name="geslacht"
                         class="member-form__control"
+                        required
                     >
                         <option value="">— Selecteer —</option>
                         <option
@@ -367,6 +375,7 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         Straat en huisnummer
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <input
@@ -377,6 +386,7 @@ $cancelUrl = $isEdit
                             (string) $value('straat')
                         ) ?>"
                         class="member-form__control"
+                        required
                         autocomplete="street-address"
                     >
                 </div>
@@ -387,6 +397,7 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         Postcode
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <input
@@ -397,6 +408,7 @@ $cancelUrl = $isEdit
                             (string) $value('postcode')
                         ) ?>"
                         class="member-form__control"
+                        required
                         autocomplete="postal-code"
                     >
                 </div>
@@ -407,6 +419,7 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         Gemeente
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <input
@@ -417,6 +430,7 @@ $cancelUrl = $isEdit
                             (string) $value('gemeente')
                         ) ?>"
                         class="member-form__control"
+                        required
                         autocomplete="address-level2"
                     >
                 </div>
@@ -427,6 +441,7 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         Land
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <input
@@ -437,6 +452,7 @@ $cancelUrl = $isEdit
                             (string) $value('land', 'België')
                         ) ?>"
                         class="member-form__control"
+                        required
                         autocomplete="country-name"
                     >
                 </div>
@@ -459,6 +475,7 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         Nationaal identificatienummer
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <input
@@ -470,6 +487,7 @@ $cancelUrl = $isEdit
                         ) ?>"
                         class="member-form__control"
                         maxlength="100"
+                        required
                         autocomplete="off"
                     >
 
@@ -495,12 +513,14 @@ $cancelUrl = $isEdit
                         class="member-form__label"
                     >
                         T-shirtmaat
+                        <span class="member-form__required">*</span>
                     </label>
 
                     <select
                         id="tshirtmaat"
                         name="tshirtmaat"
                         class="member-form__control"
+                        required
                     >
                         <option value="">— Selecteer —</option>
 

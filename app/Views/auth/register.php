@@ -437,7 +437,7 @@ $gdprAccepted = filter_var(
 
                     <div class="registration-field">
                         <label for="telefoon">
-                            Telefoon
+                            Telefoon <span aria-hidden="true">*</span>
                         </label>
 
                         <input
@@ -447,6 +447,7 @@ $gdprAccepted = filter_var(
                             value="<?= $this->escape(
                                 (string) $value('telefoon')
                             ) ?>"
+                            required
                             autocomplete="tel"
                         >
 
@@ -458,7 +459,7 @@ $gdprAccepted = filter_var(
 
                     <div class="registration-field">
                         <label for="geboortedatum">
-                            Geboortedatum
+                            Geboortedatum <span aria-hidden="true">*</span>
                         </label>
 
                         <input
@@ -471,6 +472,7 @@ $gdprAccepted = filter_var(
                             placeholder="DD/mm/YYYY"
                             pattern="(?:0[1-9]|[12][0-9]|3[01])/(?:0[1-9]|1[0-2])/[0-9]{4}"
                             maxlength="10"
+                            required
                             autocomplete="bday"
                         >
 
@@ -482,12 +484,13 @@ $gdprAccepted = filter_var(
 
                     <div class="registration-field">
                         <label for="geslacht">
-                            Geslacht
+                            Geslacht <span aria-hidden="true">*</span>
                         </label>
 
                         <select
                             id="geslacht"
                             name="geslacht"
+                            required
                         >
                             <option value="">
                                 — Selecteer —
@@ -535,9 +538,9 @@ $gdprAccepted = filter_var(
                 </header>
 
                 <div class="registration-section__body registration-grid">
-                    <div class="registration-field">
+                    <div class="registration-field registration-field--full">
                         <label for="straat">
-                            Straat
+                            Straat en huisnummer <span aria-hidden="true">*</span>
                         </label>
 
                         <input
@@ -547,7 +550,8 @@ $gdprAccepted = filter_var(
                             value="<?= $this->escape(
                                 (string) $value('straat')
                             ) ?>"
-                            autocomplete="address-line1"
+                            required
+                            autocomplete="street-address"
                         >
 
                         <?= $helpers->errorRenderer->field(
@@ -557,49 +561,8 @@ $gdprAccepted = filter_var(
                     </div>
 
                     <div class="registration-field">
-                        <label for="huisnummer">
-                            Huisnummer
-                        </label>
-
-                        <input
-                            type="text"
-                            id="huisnummer"
-                            name="huisnummer"
-                            value="<?= $this->escape(
-                                (string) $value('huisnummer')
-                            ) ?>"
-                            autocomplete="address-line2"
-                        >
-
-                        <?= $helpers->errorRenderer->field(
-                            $helpers->errors,
-                            'huisnummer'
-                        ) ?>
-                    </div>
-
-                    <div class="registration-field">
-                        <label for="bus">
-                            Bus
-                        </label>
-
-                        <input
-                            type="text"
-                            id="bus"
-                            name="bus"
-                            value="<?= $this->escape(
-                                (string) $value('bus')
-                            ) ?>"
-                        >
-
-                        <?= $helpers->errorRenderer->field(
-                            $helpers->errors,
-                            'bus'
-                        ) ?>
-                    </div>
-
-                    <div class="registration-field">
                         <label for="postcode">
-                            Postcode
+                            Postcode <span aria-hidden="true">*</span>
                         </label>
 
                         <input
@@ -609,6 +572,7 @@ $gdprAccepted = filter_var(
                             value="<?= $this->escape(
                                 (string) $value('postcode')
                             ) ?>"
+                            required
                             autocomplete="postal-code"
                         >
 
@@ -620,7 +584,7 @@ $gdprAccepted = filter_var(
 
                     <div class="registration-field">
                         <label for="gemeente">
-                            Gemeente
+                            Gemeente <span aria-hidden="true">*</span>
                         </label>
 
                         <input
@@ -630,6 +594,7 @@ $gdprAccepted = filter_var(
                             value="<?= $this->escape(
                                 (string) $value('gemeente')
                             ) ?>"
+                            required
                             autocomplete="address-level2"
                         >
 
@@ -641,7 +606,7 @@ $gdprAccepted = filter_var(
 
                     <div class="registration-field">
                         <label for="land">
-                            Land
+                            Land <span aria-hidden="true">*</span>
                         </label>
 
                         <input
@@ -654,6 +619,7 @@ $gdprAccepted = filter_var(
                                     'België'
                                 )
                             ) ?>"
+                            required
                             autocomplete="country-name"
                         >
 
@@ -673,7 +639,7 @@ $gdprAccepted = filter_var(
                 <div class="registration-section__body registration-grid">
                     <div class="registration-field">
                         <label for="rijksregisternummer">
-                            Nationaal identificatienummer
+                            Nationaal identificatienummer <span aria-hidden="true">*</span>
                         </label>
 
                         <input
@@ -686,6 +652,7 @@ $gdprAccepted = filter_var(
                                 )
                             ) ?>"
                             maxlength="100"
+                            required
                             autocomplete="off"
                         >
 
@@ -703,12 +670,13 @@ $gdprAccepted = filter_var(
 
                     <div class="registration-field">
                         <label for="tshirtmaat">
-                            T-shirtmaat
+                            T-shirtmaat <span aria-hidden="true">*</span>
                         </label>
 
                         <select
                             id="tshirtmaat"
                             name="tshirtmaat"
+                            required
                         >
                             <option value="">
                                 — Selecteer —
