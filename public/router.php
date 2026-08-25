@@ -30,4 +30,10 @@ if (
     exit;
 }
 
+// The PHP development server otherwise exposes the requested path as
+// SCRIPT_NAME. Request::path() would then mistake the first URL segment for
+// the application's installation directory (for example /members/8 -> /8).
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['PHP_SELF'] = '/index.php';
+
 require __DIR__ . '/index.php';
