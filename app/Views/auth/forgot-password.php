@@ -19,9 +19,9 @@ $email = (string) $helpers->old->get('email', '');
             <img
                 class="auth-card__logo"
                 src="<?= $this->escape(
-                    $helpers->asset->url('images/aefs-logo-white.png')
+                    $helpers->asset->url('images/jan-primus-logo.png')
                 ) ?>"
-                alt="AEFS"
+                alt="vzw Jan Primus"
             >
         </div>
 

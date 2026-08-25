@@ -20,10 +20,10 @@ $email = (string) $helpers->old->get('email', '');
                 class="auth-card__logo"
                 src="<?= $this->escape(
                     $helpers->asset->url(
-                        'images/aefs-logo-white.png'
+                        'images/jan-primus-logo.png'
                     )
                 ) ?>"
-                alt="AEFS"
+                alt="vzw Jan Primus"
             >
         </div>
 
@@ -31,7 +31,7 @@ $email = (string) $helpers->old->get('email', '');
             <h1>Aanmelden</h1>
 
             <p>
-                Meld je aan bij AEFS Eventbeheer.
+                Meld je aan bij Ledenbeheer van vzw Jan Primus.
             </p>
         </header>
 

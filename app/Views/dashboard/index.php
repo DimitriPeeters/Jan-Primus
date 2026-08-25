@@ -51,7 +51,7 @@ $this->extend('layouts.app', [
             <p class="dashboard__description">
                 <?= $isAdmin
                     ? 'Overzicht van leden, registraties en evenementen.'
-                    : 'Welkom in AEFS Eventbeheer.' ?>
+                    : 'Welkom in Ledenbeheer.' ?>
             </p>
         </div>
 

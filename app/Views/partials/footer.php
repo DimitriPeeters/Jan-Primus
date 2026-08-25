@@ -8,7 +8,7 @@
 
     <div class="footer-left">
 
-        AEFS v2 &copy; <?= date('Y') ?>
+        vzw Jan Primus &copy; <?= date('Y') ?>
 
     </div>
 

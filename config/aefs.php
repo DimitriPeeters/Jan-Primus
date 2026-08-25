@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
 
     'app' => [
-        'naam'    => 'AEFS',
+        'naam'    => 'Ledenbeheer',
         'versie'  => '2.0.0',
         'omgeving'=> 'development',
         'debug'   => true,

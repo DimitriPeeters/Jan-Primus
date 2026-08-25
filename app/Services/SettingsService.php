@@ -23,11 +23,11 @@ final class SettingsService
      * @var array<string, string>
      */
     private const DEFAULTS = [
-        'application_name' => 'AEFS Eventbeheer',
-        'organization_name' => 'All Events Forever Sure',
-        'mail_from_name' => 'AEFS Eventbeheer',
-        'mail_reply_to_name' => 'AEFS Eventbeheer',
-        'mail_reply_to_address' => '',
+        'application_name' => 'Ledenbeheer',
+        'organization_name' => 'vzw Jan Primus',
+        'mail_from_name' => 'vzw Jan Primus',
+        'mail_reply_to_name' => 'vzw Jan Primus',
+        'mail_reply_to_address' => 'info@jan-primus.be',
         'default_shift_compensation' => '30.00',
         'group_supplement' => '10.00',
         'default_event_uses_groups' => '0',

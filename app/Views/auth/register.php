@@ -335,10 +335,10 @@ $gdprAccepted = filter_var(
                 class="registration-card__logo"
                 src="<?= $this->escape(
                     $helpers->asset->url(
-                        'images/aefs-logo-white.png'
+                        'images/jan-primus-logo.png'
                     )
                 ) ?>"
-                alt="AEFS"
+                alt="vzw Jan Primus"
             >
         </div>
 

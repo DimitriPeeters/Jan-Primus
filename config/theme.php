@@ -10,15 +10,15 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'app_name' => 'AEFS',
+    'app_name' => 'Ledenbeheer',
 
-    'company' => 'All Events Forever Sure',
+    'company' => 'vzw Jan Primus',
 
-    'logo' => '/branding/logo.svg',
+    'logo' => '/assets/images/jan-primus-logo.png',
 
-    'logo_dark' => '/branding/logo-dark.svg',
+    'logo_dark' => '/assets/images/jan-primus-logo.png',
 
-    'favicon' => '/branding/favicon.ico',
+    'favicon' => '/assets/images/favicon.png',
 
     /*
     |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'font_family' => "'Inter', sans-serif",
+    'font_family' => "'Poppins', sans-serif",
 
     /*
     |--------------------------------------------------------------------------
@@ -70,11 +70,11 @@ return [
 
     'colors' => [
 
-        'primary' => '#1E3A8A',
+        'primary' => '#EF6012',
 
-        'primary_hover' => '#1D4ED8',
+        'primary_hover' => '#A63D06',
 
-        'secondary' => '#475569',
+        'secondary' => '#4A342A',
 
         'success' => '#16A34A',
 
@@ -84,19 +84,19 @@ return [
 
         'info' => '#0284C7',
 
-        'background' => '#F8FAFC',
+        'background' => '#F7F4F1',
 
         'card' => '#FFFFFF',
 
-        'border' => '#E5E7EB',
+        'border' => '#E6DDD7',
 
-        'text' => '#111827',
+        'text' => '#211713',
 
-        'muted' => '#6B7280',
+        'muted' => '#74665F',
 
-        'sidebar' => '#0F172A',
+        'sidebar' => '#18110D',
 
-        'sidebar_hover' => '#1E293B',
+        'sidebar_hover' => '#34231B',
 
     ],
 

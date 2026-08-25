@@ -44,7 +44,7 @@ if ($firstName !== '') {
     <div class="app-header__content">
         <h1 class="app-header__title">
             <?= $this->escape(
-                $title ?? 'AEFS Eventbeheer'
+                $title ?? 'Ledenbeheer'
             ) ?>
         </h1>
 

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 return [
     'enabled' => false,
-    'host' => 'smtp.gmail.com',
+    'host' => 'mailout.one.com',
     'port' => 587,
     'encryption' => 'tls',
-    'username' => 'account@gmail.com',
-    'password' => 'google-app-wachtwoord-zonder-spaties',
-    'from_address' => 'account@gmail.com',
-    'from_name' => 'AEFS Eventbeheer',
-    'reply_to_address' => '',
-    'reply_to_name' => 'AEFS Eventbeheer',
-    'application_url' => 'http://localhost/aefs-v2/public',
+    'username' => 'medewerkers@jan-primus.be',
+    'password' => 'one-com-mailboxwachtwoord',
+    'from_address' => 'medewerkers@jan-primus.be',
+    'from_name' => 'vzw Jan Primus',
+    'reply_to_address' => 'info@jan-primus.be',
+    'reply_to_name' => 'vzw Jan Primus',
+    'application_url' => 'https://publieke-url-van-ledenbeheer.example',
 ];

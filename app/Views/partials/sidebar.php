@@ -106,14 +106,14 @@ if ($currentPath !== '/') {
                 class="sidebar__logo"
                 src="<?= $this->escape(
                     $helpers->asset->url(
-                        'images/aefs-logo-white.png'
+                        'images/jan-primus-logo.png'
                     )
                 ) ?>"
-                alt="AEFS"
+                alt="vzw Jan Primus"
             >
 
             <span class="sidebar__brand-text">
-                Eventbeheer
+                Ledenbeheer
             </span>
         </a>
     </div>
@@ -156,6 +156,6 @@ if ($currentPath !== '/') {
     </nav>
 
     <div class="sidebar__footer">
-        <span>AEFS v2</span>
+        <span>vzw Jan Primus</span>
     </div>
 </aside>

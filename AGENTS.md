@@ -686,6 +686,24 @@ Never silently delete historical state that is needed for audit/history.
 
 This section is critical.
 
+## Jan Primus shared WordPress database
+
+The Jan Primus application uses the existing One.com database that also serves
+the active WordPress website. Ledenbeheer starts without application tables in
+that database.
+
+Installation and migrations must therefore be strictly additive and scoped to
+the known Ledenbeheer tables. They must never drop, truncate, rename, alter, or
+otherwise mutate WordPress tables, including every table using the configured
+WordPress table prefix. The WordPress database content is protected production
+data and is outside the application's ownership.
+
+Do not import `database/database.sql` into this shared database because that
+baseline contains destructive `DROP TABLE IF EXISTS` statements. Do not use the
+historical One.com cutover builder for Jan Primus. Prepare and verify a separate
+non-destructive installer before deployment, and confirm that none of its target
+table names already exist before execution.
+
 ## Absolutely protected data
 
 Existing data in these tables must never be lost:
@@ -1890,9 +1908,9 @@ SMTP transport uses PHPMailer behind:
 App\Mail\Transport\MailTransportInterface
 ```
 
-Gmail SMTP is the preferred deployment configuration. one.com SMTP is a
-supported configuration alternative; changing provider must not change domain
-or queue code.
+One.com SMTP is the preferred deployment configuration for Jan Primus because
+both the mailbox and application are hosted there. Changing provider must not
+change domain or queue code.
 
 Never commit SMTP credentials. The active bootstrap reads them from the
 ignored:
@@ -1901,8 +1919,8 @@ ignored:
 config/local/mail.php
 ```
 
-Use `config/local/mail.example.php` as the non-secret template. Gmail must use
-an app password rather than an account password.
+Use `config/local/mail.example.php` as the non-secret template. The One.com
+mailbox password must remain in ignored local configuration.
 
 During local end-to-end testing, an ignored
 `config/local/mail-recipients.php` may contain an explicit recipient

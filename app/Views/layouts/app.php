@@ -1,7 +1,7 @@
 <?php
 
 $this->extend('layouts.base', [
-    'title' => $title ?? 'AEFS Eventbeheer',
+    'title' => $title ?? 'Ledenbeheer',
     'bodyClass' => 'app-layout',
 ]);
 ?>
@@ -15,7 +15,7 @@ $this->extend('layouts.base', [
         <?= $this->partial(
             'partials.header',
             [
-                'title' => $title ?? 'AEFS Eventbeheer',
+                'title' => $title ?? 'Ledenbeheer',
             ]
         ) ?>
 
