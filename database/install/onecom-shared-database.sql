@@ -11,34 +11,35 @@ CREATE TABLE IF NOT EXISTS `leden` (
   `lid_id` int NOT NULL AUTO_INCREMENT,
   `voornaam` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `achternaam` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `actief` tinyint(1) NOT NULL DEFAULT '1',
-  `straat` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `postcode` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `gemeente` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `land` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `telefoon` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `geboortedatum` date DEFAULT NULL,
-  `geslacht` enum('M','V','X') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `straat` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `postcode` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
+  `gemeente` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `land` varchar(100) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'België',
+  `telefoon` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `geboortedatum` date NOT NULL,
+  `geslacht` enum('M','V','X') COLLATE utf8mb4_general_ci NOT NULL,
   `opmerkingen` text COLLATE utf8mb4_general_ci,
   `gdpr_consent` tinyint(1) NOT NULL DEFAULT '0',
   `gdpr_timestamp` datetime DEFAULT NULL,
+  `toegetreden_op` date DEFAULT NULL,
+  `uitgetreden_op` date DEFAULT NULL,
   `aangemaakt_op` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `bijgewerkt_op` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `rekeningnummer` varchar(512) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `rijksregisternummer` varchar(512) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `tshirtmaat` enum('XS','S','M','L','XL','XXL') COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `rijksregisternummer` varchar(512) COLLATE utf8mb4_general_ci NOT NULL,
+  `tshirtmaat` enum('XS','S','M','L','XL','XXL') COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`lid_id`),
-  UNIQUE KEY `email` (`email`)
+  CONSTRAINT `chk_leden_lidmaatschapsperiode`
+    CHECK (`uitgetreden_op` IS NULL OR `toegetreden_op` IS NULL OR `uitgetreden_op` >= `toegetreden_op`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `gebruikers` (
   `gebruiker_id` int NOT NULL AUTO_INCREMENT,
-  `lid_id` int DEFAULT NULL,
+  `lid_id` int NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `wachtwoord_hash` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `rol` enum('lid','admin') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'lid',
-  `goedkeuringsstatus` varchar(20) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'goedgekeurd',
+  `goedkeuringsstatus` enum('wachtend','goedgekeurd') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'wachtend',
   `goedgekeurd_op` datetime DEFAULT NULL,
   `actief` tinyint(1) NOT NULL DEFAULT '1',
   `aangemaakt_op` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -48,8 +49,8 @@ CREATE TABLE IF NOT EXISTS `gebruikers` (
   `mail_blacklist` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`gebruiker_id`),
   UNIQUE KEY `email` (`email`),
-  KEY `fk_gebruiker_lid` (`lid_id`),
-  CONSTRAINT `fk_gebruiker_lid` FOREIGN KEY (`lid_id`) REFERENCES `leden` (`lid_id`) ON DELETE SET NULL
+  UNIQUE KEY `uq_gebruikers_lid` (`lid_id`),
+  CONSTRAINT `fk_gebruiker_lid` FOREIGN KEY (`lid_id`) REFERENCES `leden` (`lid_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `audit_logs` (
@@ -69,24 +70,6 @@ CREATE TABLE IF NOT EXISTS `audit_logs` (
   KEY `idx_created` (`created_at`),
   KEY `idx_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `groepen` (
-  `groep_id` int NOT NULL AUTO_INCREMENT,
-  `naam` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `beschrijving` text COLLATE utf8mb4_general_ci,
-  PRIMARY KEY (`groep_id`),
-  UNIQUE KEY `naam` (`naam`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-CREATE TABLE IF NOT EXISTS `leden_groepen` (
-  `lid_id` int NOT NULL,
-  `groep_id` int NOT NULL,
-  PRIMARY KEY (`lid_id`,`groep_id`),
-  UNIQUE KEY `uq_leden_groepen_lid` (`lid_id`),
-  KEY `groep_id` (`groep_id`),
-  CONSTRAINT `leden_groepen_ibfk_1` FOREIGN KEY (`lid_id`) REFERENCES `leden` (`lid_id`) ON DELETE CASCADE,
-  CONSTRAINT `leden_groepen_ibfk_2` FOREIGN KEY (`groep_id`) REFERENCES `groepen` (`groep_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `instellingen` (
   `instelling_id` int unsigned NOT NULL AUTO_INCREMENT,
@@ -114,13 +97,9 @@ CREATE TABLE IF NOT EXISTS `evenementen` (
   `einddatum` date DEFAULT NULL,
   `planning_verstuurd` datetime DEFAULT NULL,
   `status` enum('concept','gepubliceerd','afgesloten','geannuleerd') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'concept',
-  `werkt_met_groepen` tinyint(1) NOT NULL DEFAULT '0',
-  `groepstoeslag_bedrag` decimal(10,2) NOT NULL DEFAULT '10.00',
   PRIMARY KEY (`event_id`),
   KEY `idx_evenementen_status_startdatum` (`status`,`startdatum`),
-  KEY `idx_evenementen_einddatum` (`einddatum`),
-  CONSTRAINT `chk_evenementen_groepstoeslag_bedrag` CHECK ((`groepstoeslag_bedrag` >= 0)),
-  CONSTRAINT `chk_evenementen_werkt_met_groepen` CHECK ((`werkt_met_groepen` in (0,1)))
+  KEY `idx_evenementen_einddatum` (`einddatum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `event_inschrijvingen` (
@@ -177,7 +156,6 @@ CREATE TABLE IF NOT EXISTS `shifts` (
   `status` enum('actief','geannuleerd') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'actief',
   `aangemaakt_op` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `bijgewerkt_op` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `vergoeding_bedrag` decimal(10,2) NOT NULL DEFAULT '30.00',
   PRIMARY KEY (`shift_id`),
   KEY `idx_shifts_event` (`event_id`),
   KEY `idx_shifts_type` (`type_id`),
@@ -187,8 +165,7 @@ CREATE TABLE IF NOT EXISTS `shifts` (
   CONSTRAINT `fk_shifts_event` FOREIGN KEY (`event_id`) REFERENCES `evenementen` (`event_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_shifts_type` FOREIGN KEY (`type_id`) REFERENCES `shift_types` (`type_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `chk_shifts_capacity` CHECK ((`max_personen` > 0)),
-  CONSTRAINT `chk_shifts_period` CHECK ((`eind_op` > `start_op`)),
-  CONSTRAINT `chk_shifts_vergoeding_bedrag` CHECK ((`vergoeding_bedrag` >= 0))
+  CONSTRAINT `chk_shifts_period` CHECK ((`eind_op` > `start_op`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `shift_inschrijvingen` (
@@ -294,10 +271,7 @@ VALUES
   ('organization_name', 'vzw Jan Primus', NULL),
   ('mail_from_name', 'vzw Jan Primus', NULL),
   ('mail_reply_to_name', 'vzw Jan Primus', NULL),
-  ('mail_reply_to_address', 'info@jan-primus.be', NULL),
-  ('default_shift_compensation', '30.00', NULL),
-  ('group_supplement', '10.00', NULL),
-  ('default_event_uses_groups', '0', NULL)
+  ('mail_reply_to_address', 'info@jan-primus.be', NULL)
 ON DUPLICATE KEY UPDATE `sleutel` = VALUES(`sleutel`);
 
 INSERT INTO `shift_types` (`naam`, `kleur`, `icoon`, `omschrijving`, `actief`)

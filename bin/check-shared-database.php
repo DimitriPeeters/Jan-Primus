@@ -43,8 +43,6 @@ $tables = [
     'leden',
     'gebruikers',
     'audit_logs',
-    'groepen',
-    'leden_groepen',
     'instellingen',
     'evenementen',
     'event_inschrijvingen',

@@ -704,6 +704,28 @@ historical One.com cutover builder for Jan Primus. Prepare and verify a separate
 non-destructive installer before deployment, and confirm that none of its target
 table names already exist before execution.
 
+## Jan Primus member and account model
+
+The following Jan Primus decisions override inherited AEFS requirements about
+member groups and compensation:
+
+- every member must have exactly one user account and every user account must
+  belong to exactly one member;
+- public registration creates both records atomically and leaves the account
+  pending until an administrator approves it;
+- roles remain limited to `admin` and `lid`; an administrator represents a
+  board member and no separate board-function field is required;
+- the account email address is the authoritative login and communication
+  address;
+- first name, last name, phone, complete address, birth date, gender, encrypted
+  national identification number and T-shirt size are required member data;
+- membership stores an optional approval/join date and an optional leaving date
+  while retaining history through active/inactive state;
+- member groups, group supplements, IBAN, member compensation, membership fees,
+  emergency contacts and payment tracking are outside the Jan Primus scope;
+- the national identification number is retained for insurance processing and
+  must keep the existing encrypted-at-rest protections and restricted access.
+
 ## Absolutely protected data
 
 Existing data in these tables must never be lost:

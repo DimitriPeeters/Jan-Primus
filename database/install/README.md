@@ -26,6 +26,8 @@ van Ledenbeheer.
 ## Veiligheidskenmerken
 
 - Het installatieschema maakt uitsluitend bekende Ledenbeheer-tabellen aan.
+- Elk lid is via een verplichte unieke relatie aan exact één gebruikersaccount gekoppeld.
+- Groepen, IBAN, lidgeld en vergoedingsvelden maken geen deel uit van het schema.
 - Het bevat geen `DROP`, `TRUNCATE`, `CREATE DATABASE` of `USE`.
 - WordPress-tabellen worden niet gelezen of gewijzigd door het schema.
 - Basisinstellingen worden alleen toegevoegd wanneer hun sleutel nog ontbreekt.
