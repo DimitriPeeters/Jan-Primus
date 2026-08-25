@@ -15,8 +15,6 @@ $events ??= [];
 $shiftTypes ??= [];
 $shift ??= null;
 $selectedEventId ??= 0;
-$defaultShiftCompensation ??= Shift::DEFAULT_COMPENSATION;
-$groupSupplement ??= '10.00';
 
 $oldInput = $helpers->old->all();
 
@@ -70,23 +68,6 @@ $eindtijd = (string) $value(
 $maxPersonen = (int) $value(
     'max_personen',
     $shift?->maxPersonen ?? 1
-);
-
-$vergoedingBedrag = (string) $value(
-    'vergoeding_bedrag',
-    $shift !== null
-        ? number_format(
-            (float) $shift->vergoedingBedrag,
-            2,
-            ',',
-            ''
-        )
-        : number_format(
-            (float) $defaultShiftCompensation,
-            2,
-            ',',
-            ''
-        )
 );
 
 $status = $shift?->status ?? Shift::STATUS_ACTIEF;
@@ -207,45 +188,6 @@ $status = $shift?->status ?? Shift::STATUS_ACTIEF;
                 <?= $helpers->errorRenderer->field(
                     $helpers->errors,
                     'max_personen'
-                ) ?>
-            </div>
-
-            <div class="form-group">
-                <label for="vergoeding_bedrag" class="form-label">
-                    Vergoeding per gewerkte shift
-                    <span class="shift-form-required">*</span>
-                </label>
-
-                <input
-                    type="text"
-                    id="vergoeding_bedrag"
-                    name="vergoeding_bedrag"
-                    value="<?= $this->escape($vergoedingBedrag) ?>"
-                    class="form-control"
-                    placeholder="30,00"
-                    pattern="[0-9]+(?:[,.][0-9]{1,2})?"
-                    inputmode="decimal"
-                    aria-describedby="shift-compensation-help"
-                    required
-                >
-
-                <small id="shift-compensation-help" class="shift-form-help">
-                    De huidige standaard is € <?= $this->escape(
-                        number_format(
-                            (float) $defaultShiftCompensation,
-                            2,
-                            ',',
-                            ''
-                        )
-                    ) ?>. Bij een groepsevenement geldt de toeslag die op het evenement is vastgelegd
-                    (standaard € <?= $this->escape(
-                        number_format((float) $groupSupplement, 2, ',', '')
-                    ) ?>).
-                </small>
-
-                <?= $helpers->errorRenderer->field(
-                    $helpers->errors,
-                    'vergoeding_bedrag'
                 ) ?>
             </div>
 

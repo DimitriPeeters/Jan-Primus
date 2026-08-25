@@ -14,9 +14,6 @@ use App\Support\BelgianDateTime;
 $event ??= null;
 $shiftTypes ??= [];
 $shifts ??= [];
-$defaultShiftCompensation ??= Shift::DEFAULT_COMPENSATION;
-$defaultGroupSupplement ??= '10.00';
-$defaultEventUsesGroups ??= false;
 
 $oldInput = $helpers->old->all();
 
@@ -68,27 +65,6 @@ $einddatum = (string) $value(
 $status = (string) $value(
     'status',
     $event?->status ?? Event::STATUS_CONCEPT
-);
-
-$werktMetGroepen = filter_var(
-    $value(
-        'werkt_met_groepen',
-        $event?->werktMetGroepen ?? $defaultEventUsesGroups
-    ),
-    FILTER_VALIDATE_BOOL
-);
-
-$groepstoeslagBedrag = (string) $value(
-    'groepstoeslag_bedrag',
-    number_format(
-        (float) (
-            $event?->groepstoeslagBedrag
-            ?? $defaultGroupSupplement
-        ),
-        2,
-        ',',
-        ''
-    )
 );
 
 $oldShiftRows = $oldInput['shifts'] ?? [];
@@ -215,57 +191,6 @@ $oldShiftRows = is_array($oldShiftRows)
                 <?= $helpers->errorRenderer->field(
                     $helpers->errors,
                     'max_deelnemers'
-                ) ?>
-            </div>
-
-            <div class="form-group event-form-field--full">
-                <input type="hidden" name="werkt_met_groepen" value="0">
-
-                <label class="event-group-compensation" for="werkt_met_groepen">
-                    <input
-                        type="checkbox"
-                        id="werkt_met_groepen"
-                        name="werkt_met_groepen"
-                        value="1"
-                        <?= $werktMetGroepen ? 'checked' : '' ?>
-                    >
-
-                    <span>
-                        <strong>Werken met ledengroepen</strong>
-                        <small>
-                            Voor aanwezige groepsleden wordt per gewerkte shift
-                            de hieronder vastgelegde toeslag toegevoegd aan het ingestelde shiftbedrag.
-                            De vereniging ontvangt het totaal van haar leden.
-                        </small>
-                    </span>
-                </label>
-
-                <?= $helpers->errorRenderer->field(
-                    $helpers->errors,
-                    'werkt_met_groepen'
-                ) ?>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label" for="groepstoeslag_bedrag">
-                    Groepstoeslag per gewerkte shift
-                </label>
-                <input
-                    class="form-control"
-                    id="groepstoeslag_bedrag"
-                    name="groepstoeslag_bedrag"
-                    type="text"
-                    inputmode="decimal"
-                    pattern="[0-9]+(?:[,.][0-9]{1,2})?"
-                    value="<?= $this->escape($groepstoeslagBedrag) ?>"
-                    required
-                >
-                <small class="event-form-help">
-                    Dit bedrag wordt op het evenement bewaard zodat historische rapporten gelijk blijven.
-                </small>
-                <?= $helpers->errorRenderer->field(
-                    $helpers->errors,
-                    'groepstoeslag_bedrag'
                 ) ?>
             </div>
 

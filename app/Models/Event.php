@@ -22,8 +22,6 @@ final class Event
         public readonly ?string $locatie,
         public readonly ?int $maxDeelnemers,
         public readonly string $status,
-        public readonly bool $werktMetGroepen,
-        public readonly string $groepstoeslagBedrag,
         public readonly ?string $planningVerstuurd,
         public readonly string $aangemaaktOp,
         public readonly ?string $bijgewerktOp,
@@ -247,11 +245,6 @@ final class Event
             && $this->planningVerstuurd !== '';
     }
 
-    public function usesGroupCompensation(): bool
-    {
-        return $this->werktMetGroepen;
-    }
-
     public function displayPlanningSentAt(): string
     {
         if (!$this->planningWasSent()) {
@@ -275,8 +268,6 @@ final class Event
             'startdatum' => $this->startDatum,
             'einddatum' => $this->eindDatum,
             'status' => $this->status,
-            'werkt_met_groepen' => $this->werktMetGroepen,
-            'groepstoeslag_bedrag' => $this->groepstoeslagBedrag,
             'planning_verstuurd' => $this->planningVerstuurd,
         ];
     }

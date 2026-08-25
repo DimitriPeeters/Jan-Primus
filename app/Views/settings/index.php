@@ -10,12 +10,6 @@ use App\Models\ShiftType;
 
 $this->extend('layouts.app', ['title' => $title ?? 'Instellingen']);
 
-$money = static fn(string $value): string => number_format(
-    (float) $value,
-    2,
-    ',',
-    ''
-);
 
 $mail = $status['mail'];
 $system = $status['system'];
@@ -117,72 +111,6 @@ $system = $status['system'];
                         </small>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="default_shift_compensation">
-                            Standaardvergoeding per shift
-                        </label>
-                        <div class="settings-money-field">
-                            <span>€</span>
-                            <input
-                                class="form-control"
-                                id="default_shift_compensation"
-                                name="default_shift_compensation"
-                                type="text"
-                                inputmode="decimal"
-                                pattern="[0-9]+(?:[,.][0-9]{1,2})?"
-                                value="<?= $this->escape(
-                                    $money($settings['default_shift_compensation'])
-                                ) ?>"
-                                required
-                            >
-                        </div>
-                        <small class="settings-help">
-                            Wordt vooraf ingevuld bij nieuwe shifts; bestaande shiftbedragen wijzigen niet.
-                        </small>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="group_supplement">
-                            Standaard groepstoeslag per shift
-                        </label>
-                        <div class="settings-money-field">
-                            <span>€</span>
-                            <input
-                                class="form-control"
-                                id="group_supplement"
-                                name="group_supplement"
-                                type="text"
-                                inputmode="decimal"
-                                pattern="[0-9]+(?:[,.][0-9]{1,2})?"
-                                value="<?= $this->escape(
-                                    $money($settings['group_supplement'])
-                                ) ?>"
-                                required
-                            >
-                        </div>
-                        <small class="settings-help">
-                            Wordt vastgelegd bij nieuwe evenementen die met groepen werken.
-                        </small>
-                    </div>
-
-                    <div class="form-group settings-form-field--full">
-                        <input type="hidden" name="default_event_uses_groups" value="0">
-                        <label class="settings-checkbox" for="default_event_uses_groups">
-                            <input
-                                id="default_event_uses_groups"
-                                name="default_event_uses_groups"
-                                type="checkbox"
-                                value="1"
-                                <?= $settings['default_event_uses_groups'] === '1'
-                                    ? 'checked'
-                                    : '' ?>
-                            >
-                            <span>
-                                <strong>Nieuwe evenementen standaard als groepsevenement</strong>
-                                <small>De beheerder kan dit per evenement nog aanpassen.</small>
-                            </span>
-                        </label>
-                    </div>
                 </div>
 
                 <footer class="card__footer settings-actions">

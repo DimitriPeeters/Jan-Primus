@@ -155,19 +155,12 @@ final class MailingRepository
 
     /**
      * @return array{
-     *     groups: array<int, array{id: int, label: string}>,
      *     events: array<int, array{id: int, label: string}>,
      *     shifts: array<int, array{id: int, event_id: int, label: string}>
      * }
      */
     public function audienceOptions(): array
     {
-        $groups = $this->database->query(<<<'SQL'
-            SELECT groep_id AS id, naam AS label
-            FROM groepen
-            ORDER BY naam ASC
-            SQL)->fetchAll(PDO::FETCH_ASSOC);
-
         $events = $this->database->query(<<<'SQL'
             SELECT
                 event_id AS id,
@@ -201,13 +194,6 @@ final class MailingRepository
             SQL)->fetchAll(PDO::FETCH_ASSOC);
 
         return [
-            'groups' => array_map(
-                static fn(array $row): array => [
-                    'id' => (int) $row['id'],
-                    'label' => (string) $row['label'],
-                ],
-                $groups
-            ),
             'events' => array_map(
                 static fn(array $row): array => [
                     'id' => (int) $row['id'],
@@ -238,23 +224,6 @@ final class MailingRepository
     public function eligibleAllMembers(): array
     {
         return $this->eligibleMembers();
-    }
-
-    /**
-     * @param int[] $groupIds
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    public function eligibleMembersByGroups(array $groupIds): array
-    {
-        return $this->eligibleMembers(
-            'EXISTS (
-                SELECT 1
-                FROM leden_groepen lg
-                WHERE lg.lid_id = l.lid_id
-                  AND lg.groep_id IN (' . $this->integerList($groupIds) . ')
-            )'
-        );
     }
 
     /**

@@ -15,7 +15,6 @@ use App\Http\Requests\ShiftRegistrationRequest;
 use App\Http\Requests\ShiftRequest;
 use App\Repositories\EventRepository;
 use App\Services\ShiftService;
-use App\Services\SettingsService;
 use DomainException;
 use InvalidArgumentException;
 use RuntimeException;
@@ -27,7 +26,6 @@ final class ShiftController extends BaseController
         ViewFactory $views,
         Request $request,
         private readonly ShiftService $service,
-        private readonly SettingsService $settings,
         private readonly EventRepository $eventRepository,
         private readonly CsrfHelper $csrf
     ) {
@@ -151,10 +149,6 @@ final class ShiftController extends BaseController
                 'shiftTypes' => $this->service
                     ->activeTypes(),
                 'selectedEventId' => $selectedEventId,
-                'defaultShiftCompensation' => $this->settings
-                    ->defaultShiftCompensation(),
-                'groupSupplement' => $this->settings
-                    ->groupSupplement(),
             ]
         );
     }
@@ -166,10 +160,7 @@ final class ShiftController extends BaseController
         try {
             $this->validateCsrf($input);
 
-            $shiftRequest = new ShiftRequest(
-                $input,
-                $this->settings->defaultShiftCompensation()
-            );
+            $shiftRequest = new ShiftRequest($input);
 
             $id = $this->service->create(
                 $shiftRequest->all()
@@ -215,10 +206,6 @@ final class ShiftController extends BaseController
                     ->allForAdministration(),
                 'shiftTypes' => $this->service
                     ->allTypes(),
-                'defaultShiftCompensation' => $this->settings
-                    ->defaultShiftCompensation(),
-                'groupSupplement' => $this->settings
-                    ->groupSupplement(),
             ]
         );
     }
@@ -238,10 +225,7 @@ final class ShiftController extends BaseController
         try {
             $this->validateCsrf($input);
 
-            $shiftRequest = new ShiftRequest(
-                $input,
-                $shift->vergoedingBedrag
-            );
+            $shiftRequest = new ShiftRequest($input);
 
             $this->service->update(
                 $shiftId,

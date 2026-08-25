@@ -2,17 +2,14 @@
 
 use AEFS\Core\View\Helper\ViewHelpers;
 use App\Models\Member;
-use App\Models\MemberGroup;
 use App\Support\BelgianDateTime;
 
 /** @var ViewHelpers $helpers */
 /** @var Member $lid */
-/** @var MemberGroup[] $groepen */
 /** @var array<int, array<string, mixed>> $logs */
 /** @var string|null $title */
 
 $logs ??= [];
-$groepen ??= [];
 
 $memberUrl = $helpers->url->to(
     '/members/' . $lid->lidId
@@ -472,31 +469,6 @@ $this->extend(
                                 <span class="member-status member-status--neutral">
                                     Niet toegestaan
                                 </span>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row">Groepen</th>
-                        <td>
-                            <?php if ($groepen === []): ?>
-                                —
-                            <?php else: ?>
-                                <div class="member-groups">
-                                    <?php foreach ($groepen as $groep): ?>
-                                        <a
-                                            class="member-group"
-                                            href="<?= $this->escape(
-                                                $helpers->url->to(
-                                                    '/members/groups?groep='
-                                                    . $groep->groepId
-                                                )
-                                            ) ?>"
-                                        >
-                                            <?= $this->escape($groep->naam) ?>
-                                        </a>
-                                    <?php endforeach; ?>
-                                </div>
                             <?php endif; ?>
                         </td>
                     </tr>

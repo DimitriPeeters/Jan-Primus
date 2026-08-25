@@ -11,7 +11,6 @@ final class Shift
 {
     public const STATUS_ACTIEF = 'actief';
     public const STATUS_GEANNULEERD = 'geannuleerd';
-    public const DEFAULT_COMPENSATION = '30.00';
 
     public function __construct(
         public readonly int $shiftId,
@@ -24,7 +23,6 @@ final class Shift
         public readonly string $status,
         public readonly string $aangemaaktOp,
         public readonly ?string $bijgewerktOp,
-        public readonly string $vergoedingBedrag,
         public readonly ?string $eventTitel = null,
         public readonly ?string $eventStartDatum = null,
         public readonly ?string $eventEindDatum = null,
@@ -165,16 +163,6 @@ final class Shift
         );
     }
 
-    public function displayVergoeding(): string
-    {
-        return '€ ' . number_format(
-            (float) $this->vergoedingBedrag,
-            2,
-            ',',
-            '.'
-        );
-    }
-
     public function statusLabel(): string
     {
         return self::statusOptions()[$this->status]
@@ -221,7 +209,6 @@ final class Shift
             'start_op' => $this->startOp,
             'eind_op' => $this->eindOp,
             'max_personen' => $this->maxPersonen,
-            'vergoeding_bedrag' => $this->vergoedingBedrag,
             'status' => $this->status,
         ];
     }

@@ -14,24 +14,6 @@ $memberMiddleware = [
 ];
 
 $router
-    ->get('/members/groups', [MemberController::class, 'groups'])
-    ->middleware(...$memberMiddleware)
-    ->name('members.groups');
-
-$router
-    ->post('/members/groups/create', [MemberController::class, 'createGroup'])
-    ->middleware(...$memberMiddleware)
-    ->name('members.groups.create');
-
-$router
-    ->post(
-        '/members/groups/{id}/members',
-        [MemberController::class, 'updateGroupMembers']
-    )
-    ->middleware(...$memberMiddleware)
-    ->name('members.groups.members.update');
-
-$router
     ->get('/members', [MemberController::class, 'index'])
     ->middleware(...$memberMiddleware)
     ->name('members.index');

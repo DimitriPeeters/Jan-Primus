@@ -194,8 +194,6 @@ final class EventRepository
                 startdatum,
                 einddatum,
                 status,
-                werkt_met_groepen,
-                groepstoeslag_bedrag,
                 aangemaakt_op,
                 bijgewerkt_op
             )
@@ -208,8 +206,6 @@ final class EventRepository
                 :startdatum,
                 :einddatum,
                 :status,
-                :werkt_met_groepen,
-                :groepstoeslag_bedrag,
                 NOW(),
                 NOW()
             )
@@ -242,8 +238,6 @@ final class EventRepository
                 startdatum = :startdatum,
                 einddatum = :einddatum,
                 status = :status,
-                werkt_met_groepen = :werkt_met_groepen,
-                groepstoeslag_bedrag = :groepstoeslag_bedrag,
                 bijgewerkt_op = NOW()
             WHERE event_id = :event_id
             SQL);

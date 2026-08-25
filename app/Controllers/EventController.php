@@ -14,7 +14,6 @@ use App\Http\Requests\EventCancellationRequest;
 use App\Http\Requests\EventRegistrationRequest;
 use App\Http\Requests\EventRequest;
 use App\Services\EventService;
-use App\Services\SettingsService;
 use RuntimeException;
 use Throwable;
 
@@ -24,7 +23,6 @@ final class EventController extends BaseController
         ViewFactory $views,
         Request $request,
         private readonly EventService $service,
-        private readonly SettingsService $settings,
         private readonly CsrfHelper $csrf
     ) {
         parent::__construct(
@@ -109,12 +107,6 @@ final class EventController extends BaseController
             [
                 'title' => 'Nieuw evenement',
                 'shiftTypes' => $this->service->activeShiftTypes(),
-                'defaultShiftCompensation' => $this->settings
-                    ->defaultShiftCompensation(),
-                'defaultGroupSupplement' => $this->settings
-                    ->groupSupplement(),
-                'defaultEventUsesGroups' => $this->settings
-                    ->defaultEventUsesGroups(),
             ]
         );
     }
@@ -126,12 +118,7 @@ final class EventController extends BaseController
         try {
             $this->validateCsrf($input);
 
-            $eventRequest = new EventRequest(
-                $input,
-                $this->settings->defaultShiftCompensation(),
-                $this->settings->defaultEventUsesGroups(),
-                $this->settings->groupSupplement()
-            );
+            $eventRequest = new EventRequest($input);
             $id = $this->service->create(
                 $eventRequest->all(),
                 $eventRequest->shifts()
@@ -169,11 +156,6 @@ final class EventController extends BaseController
                 'event' => $event,
                 'shiftTypes' => $this->service->activeShiftTypes(),
                 'shifts' => $this->service->shiftsForEvent($id),
-                'defaultShiftCompensation' => $this->settings
-                    ->defaultShiftCompensation(),
-                'defaultGroupSupplement' => $this->settings
-                    ->groupSupplement(),
-                'defaultEventUsesGroups' => false,
             ]
         );
     }
@@ -191,12 +173,7 @@ final class EventController extends BaseController
         try {
             $this->validateCsrf($input);
 
-            $eventRequest = new EventRequest(
-                $input,
-                $this->settings->defaultShiftCompensation(),
-                $event->werktMetGroepen,
-                $event->groepstoeslagBedrag
-            );
+            $eventRequest = new EventRequest($input);
             $data = $eventRequest->all();
 
             $this->service->update(

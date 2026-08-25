@@ -60,7 +60,6 @@ $configuration = [
     |--------------------------------------------------------------------------
     |
     | Wordt gebruikt voor encryptie van gevoelige gegevens zoals:
-    | - rekeningnummer
     | - rijksregisternummer
     | - toekomstige API-sleutels
     |

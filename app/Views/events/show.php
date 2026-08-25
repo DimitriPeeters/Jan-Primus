@@ -29,14 +29,8 @@ $actions = '';
 
 if ($isAdmin) {
     $actions = sprintf(
-        '<a href="%s" class="btn btn-secondary">Vergoedingsrapport</a>'
-        . '<a href="%s" class="btn btn-primary">Shift toevoegen</a>'
+        '<a href="%s" class="btn btn-primary">Shift toevoegen</a>'
         . '<a href="%s" class="btn btn-warning">Wijzigen</a>',
-        $this->escape(
-            $helpers->url->to(
-                '/reports/event-compensation?event_id=' . $event->eventId
-            )
-        ),
         $this->escape(
             $helpers->url->to(
                 '/shifts/create?event_id=' . $event->eventId
@@ -106,25 +100,6 @@ if (
                         <dt>Capaciteit</dt>
                         <dd><?= $this->escape($event->capacityLabel()) ?></dd>
                     </div>
-                    <?php if ($isAdmin): ?>
-                        <div>
-                            <dt>Groepsvergoedingen</dt>
-                            <dd>
-                                <?= $event->werktMetGroepen
-                                    ? 'Actief · € '
-                                        . $this->escape(
-                                            number_format(
-                                                (float) $event->groepstoeslagBedrag,
-                                                2,
-                                                ',',
-                                                ''
-                                            )
-                                        )
-                                        . ' per shift'
-                                    : 'Niet actief' ?>
-                            </dd>
-                        </div>
-                    <?php endif; ?>
                 </dl>
 
                 <div class="event-description">

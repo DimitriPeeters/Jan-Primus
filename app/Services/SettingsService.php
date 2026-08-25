@@ -28,9 +28,6 @@ final class SettingsService
         'mail_from_name' => 'vzw Jan Primus',
         'mail_reply_to_name' => 'vzw Jan Primus',
         'mail_reply_to_address' => 'info@jan-primus.be',
-        'default_shift_compensation' => '30.00',
-        'group_supplement' => '10.00',
-        'default_event_uses_groups' => '0',
     ];
 
     /**
@@ -148,21 +145,6 @@ final class SettingsService
     public function mailReplyToAddress(): string
     {
         return $this->value('mail_reply_to_address');
-    }
-
-    public function defaultShiftCompensation(): string
-    {
-        return $this->value('default_shift_compensation');
-    }
-
-    public function groupSupplement(): string
-    {
-        return $this->value('group_supplement');
-    }
-
-    public function defaultEventUsesGroups(): bool
-    {
-        return $this->value('default_event_uses_groups') === '1';
     }
 
     /**

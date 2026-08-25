@@ -49,30 +49,6 @@ $this->extend(
             </div>
         </article>
 
-        <article class="card report-card">
-            <header class="card__header">
-                <div>
-                    <span class="report-card__type">Vergoedingen</span>
-                    <h2 class="card__title">Vrijwilligersvergoedingen per evenement</h2>
-                </div>
-            </header>
-
-            <div class="card__body report-card__body">
-                <p>
-                    Bekijk per medewerker en gewerkte dag de vergoeding,
-                    met medewerkerstotalen en afzonderlijke groepstotalen waar van toepassing.
-                </p>
-
-                <a
-                    class="btn btn-primary"
-                    href="<?= $this->escape(
-                        $helpers->url->to('/reports/event-compensation')
-                    ) ?>"
-                >
-                    Rapport openen
-                </a>
-            </div>
-        </article>
     </div>
 </div>
 <?php $this->endSection(); ?>

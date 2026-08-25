@@ -49,35 +49,6 @@ final class SettingsValidator
             );
         }
 
-        foreach (
-            [
-                'default_shift_compensation' => 'De standaard shiftvergoeding',
-                'group_supplement' => 'De groepstoeslag',
-            ] as $key => $label
-        ) {
-            $value = (string) ($data[$key] ?? '');
-
-            if (
-                preg_match('/^\d{1,8}\.\d{2}$/', $value) !== 1
-                || (float) $value < 0
-            ) {
-                throw new InvalidArgumentException(
-                    $label . ' moet een geldig positief bedrag met maximaal twee decimalen zijn.'
-                );
-            }
-        }
-
-        if (
-            !in_array(
-                (string) ($data['default_event_uses_groups'] ?? ''),
-                ['0', '1'],
-                true
-            )
-        ) {
-            throw new InvalidArgumentException(
-                'De standaardkeuze voor groepsevenementen is ongeldig.'
-            );
-        }
     }
 
     private function length(string $value): int

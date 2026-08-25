@@ -94,24 +94,6 @@ final class EvenementenValidator
             );
         }
 
-        if (!is_bool($data['werkt_met_groepen'] ?? null)) {
-            throw new InvalidArgumentException(
-                'De instelling voor groepsvergoedingen is ongeldig.'
-            );
-        }
-
-        $groupSupplement = (string) (
-            $data['groepstoeslag_bedrag'] ?? ''
-        );
-
-        if (
-            preg_match('/^\d{1,8}\.\d{2}$/', $groupSupplement) !== 1
-            || (float) $groupSupplement < 0
-        ) {
-            throw new InvalidArgumentException(
-                'De groepstoeslag moet een geldig bedrag met maximaal twee decimalen zijn.'
-            );
-        }
     }
 
     private function isValidDate(string $value): bool

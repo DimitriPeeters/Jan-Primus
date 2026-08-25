@@ -9,11 +9,8 @@ use AEFS\Core\Http\Response;
 use AEFS\Core\Session;
 use AEFS\Core\View\Helper\CsrfHelper;
 use AEFS\Core\View\ViewFactory;
-use App\Http\Requests\MemberGroupAssignmentRequest;
-use App\Http\Requests\MemberGroupRequest;
 use App\Http\Requests\MemberRequest;
 use App\Services\AuditLogService;
-use App\Services\MemberGroupService;
 use App\Services\MemberService;
 use RuntimeException;
 use Throwable;
@@ -25,7 +22,6 @@ final class MemberController extends BaseController
         Request $request,
         private readonly MemberService $service,
         private readonly AuditLogService $auditLog,
-        private readonly MemberGroupService $groups,
         private readonly CsrfHelper $csrf
     ) {
         parent::__construct(
@@ -77,105 +73,7 @@ final class MemberController extends BaseController
                     'member',
                     $id
                 ),
-                'groepen' => $this->groups->forMember($id),
             ]
-        );
-    }
-
-    public function groups(): Response
-    {
-        $groups = $this->groups->all();
-        $selectedGroupId = (int) $this->request()->query->get(
-            'groep',
-            $groups[0]->groepId ?? 0
-        );
-
-        $selectedGroup = $this->groups->find($selectedGroupId);
-
-        return $this->view(
-            'members.groups',
-            [
-                'title' => 'Ledengroepen',
-                'groepen' => $groups,
-                'geselecteerdeGroep' => $selectedGroup,
-                'leden' => $this->service->all(),
-                'geselecteerdeLidIds' => $selectedGroup !== null
-                    ? $this->groups->memberIds(
-                        $selectedGroup->groepId
-                    )
-                    : [],
-                'groepPerLid' => $this->groups
-                    ->membershipByMember(),
-            ]
-        );
-    }
-
-    public function createGroup(): Response
-    {
-        $input = $this->request()->request->all();
-
-        try {
-            $this->validateCsrf($input);
-
-            $groupRequest = new MemberGroupRequest($input);
-            $groupId = $this->groups->create(
-                $groupRequest->all()
-            );
-
-            $this->success(
-                'De groep werd succesvol aangemaakt.'
-            );
-
-            return $this->redirect(
-                '/members/groups?groep=' . $groupId
-            );
-        } catch (Throwable $throwable) {
-            unset($input['_token']);
-
-            Session::flash('_old_input', $input);
-            Session::flash(
-                '_errors',
-                [
-                    'form' => [
-                        $throwable->getMessage(),
-                    ],
-                ]
-            );
-
-            $this->error(
-                'De groep kon niet worden aangemaakt.'
-            );
-
-            return $this->redirect('/members/groups');
-        }
-    }
-
-    public function updateGroupMembers(): Response
-    {
-        $groupId = $this->routeId();
-        $input = $this->request()->request->all();
-
-        try {
-            $this->validateCsrf($input);
-
-            $assignmentRequest = new MemberGroupAssignmentRequest(
-                $input
-            );
-
-            $this->groups->syncMembers(
-                $groupId,
-                $assignmentRequest->memberIds()
-            );
-
-            $this->success(
-                'De groepsleden werden succesvol bijgewerkt.'
-            );
-        } catch (Throwable $throwable) {
-            $this->error($throwable->getMessage());
-        }
-
-        return $this->redirect(
-            '/members/groups?groep=' . $groupId
         );
     }
 

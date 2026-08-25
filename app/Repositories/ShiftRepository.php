@@ -225,8 +225,7 @@ final class ShiftRepository
                 max_personen,
                 status,
                 aangemaakt_op,
-                bijgewerkt_op,
-                vergoeding_bedrag
+                bijgewerkt_op
             )
             VALUES
             (
@@ -238,8 +237,7 @@ final class ShiftRepository
                 :max_personen,
                 :status,
                 NOW(),
-                NULL,
-                :vergoeding_bedrag
+                NULL
             )
             SQL);
 
@@ -268,7 +266,6 @@ final class ShiftRepository
                 eind_op = :eind_op,
                 max_personen = :max_personen,
                 status = :status,
-                vergoeding_bedrag = :vergoeding_bedrag,
                 bijgewerkt_op = NOW()
             WHERE shift_id = :shift_id
             SQL);

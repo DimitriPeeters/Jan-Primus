@@ -14,8 +14,7 @@ final class ShiftRequest
      * @param array<string, mixed> $input
      */
     public function __construct(
-        private readonly array $input,
-        private readonly string $defaultCompensation = Shift::DEFAULT_COMPENSATION
+        private readonly array $input
     ) {
     }
 
@@ -57,10 +56,6 @@ final class ShiftRequest
             ),
             'max_personen' => (int) (
                 $this->input['max_personen'] ?? 0
-            ),
-            'vergoeding_bedrag' => $this->normalizeCompensation(
-                $this->input['vergoeding_bedrag']
-                ?? $this->defaultCompensation
             ),
             'status' => trim(
                 (string) (
@@ -148,28 +143,4 @@ final class ShiftRequest
             : null;
     }
 
-    private function normalizeCompensation(mixed $value): string
-    {
-        $value = str_replace(
-            ['€', ' '],
-            '',
-            trim((string) $value)
-        );
-
-        if (
-            preg_match(
-                '/^\d+(?:[,.]\d{1,2})?$/',
-                $value
-            ) !== 1
-        ) {
-            return $value;
-        }
-
-        return number_format(
-            (float) str_replace(',', '.', $value),
-            2,
-            '.',
-            ''
-        );
-    }
 }

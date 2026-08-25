@@ -12,7 +12,6 @@ final class MailingValidator
 {
     private const AUDIENCE_TYPES = [
         'alle_leden',
-        'groep',
         'evenement',
         'shifts',
     ];
@@ -53,7 +52,6 @@ final class MailingValidator
         }
 
         $requiredSelection = match ($audienceType) {
-            'groep' => $data['groep_ids'] ?? [],
             'evenement' => $data['event_ids'] ?? [],
             'shifts' => $data['shift_ids'] ?? [],
             default => [1],
@@ -61,7 +59,7 @@ final class MailingValidator
 
         if (!is_array($requiredSelection) || $requiredSelection === []) {
             throw new InvalidArgumentException(
-                'Selecteer minstens één groep, evenement of shift.'
+                'Selecteer minstens één evenement of shift.'
             );
         }
 

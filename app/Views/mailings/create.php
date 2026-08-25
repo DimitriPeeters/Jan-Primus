@@ -13,13 +13,9 @@ $audienceType = (string) $helpers->old->get(
     'doelgroep_type',
     'alle_leden'
 );
-$selectedGroups = $helpers->old->get('groep_ids', []);
 $selectedEvents = $helpers->old->get('event_ids', []);
 $selectedShifts = $helpers->old->get('shift_ids', []);
 
-$selectedGroups = is_array($selectedGroups)
-    ? array_map('intval', $selectedGroups)
-    : [];
 $selectedEvents = is_array($selectedEvents)
     ? array_map('intval', $selectedEvents)
     : [];
@@ -82,9 +78,6 @@ $selectedShifts = is_array($selectedShifts)
                         <option value="alle_leden" <?= $audienceType === 'alle_leden' ? 'selected' : '' ?>>
                             Alle actieve leden
                         </option>
-                        <option value="groep" <?= $audienceType === 'groep' ? 'selected' : '' ?>>
-                            Leden van één of meer groepen
-                        </option>
                         <option value="evenement" <?= $audienceType === 'evenement' ? 'selected' : '' ?>>
                             Actieve inschrijvingen van één of meer evenementen
                         </option>
@@ -95,21 +88,6 @@ $selectedShifts = is_array($selectedShifts)
                     <small>
                         Leden zonder geldig e-mailadres en leden op de mail-blacklist worden automatisch uitgesloten.
                     </small>
-                </div>
-
-                <div class="form-group mailing-full-width" data-audience-panel="groep" hidden>
-                    <label for="groep_ids">Groepen *</label>
-                    <select id="groep_ids" name="groep_ids[]" multiple size="6">
-                        <?php foreach ($options['groups'] ?? [] as $group): ?>
-                            <option
-                                value="<?= (int) $group['id'] ?>"
-                                <?= in_array((int) $group['id'], $selectedGroups, true) ? 'selected' : '' ?>
-                            >
-                                <?= $this->escape((string) $group['label']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <small>Gebruik Ctrl (Windows) of Cmd (Mac) om meerdere groepen te kiezen.</small>
                 </div>
 
                 <div class="form-group mailing-full-width" data-audience-panel="evenement" hidden>

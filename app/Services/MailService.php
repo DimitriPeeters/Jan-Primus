@@ -402,9 +402,6 @@ final class MailService
     {
         return match ($data['doelgroep_type'] ?? '') {
             'alle_leden' => $this->repository->eligibleAllMembers(),
-            'groep' => $this->repository->eligibleMembersByGroups(
-                $data['groep_ids'] ?? []
-            ),
             'evenement' => $this->repository->eligibleMembersByEvents(
                 $data['event_ids'] ?? []
             ),
@@ -423,9 +420,6 @@ final class MailService
     private function audienceSnapshot(array $data): array
     {
         return match ($data['doelgroep_type'] ?? '') {
-            'groep' => [
-                'groep_ids' => $data['groep_ids'] ?? [],
-            ],
             'evenement' => [
                 'event_ids' => $data['event_ids'] ?? [],
             ],

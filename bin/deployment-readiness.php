@@ -93,8 +93,6 @@ try {
     $requiredTables = [
         'leden',
         'gebruikers',
-        'groepen',
-        'leden_groepen',
         'evenementen',
         'event_inschrijvingen',
         'event_inschrijving_dagen',

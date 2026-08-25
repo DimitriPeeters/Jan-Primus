@@ -227,16 +227,6 @@ $this->extend(
             </p>
         </div>
 
-        <div class="members-page__actions">
-            <a
-                class="btn btn-secondary"
-                href="<?= $this->escape(
-                    $helpers->url->to('/members/groups')
-                ) ?>"
-            >
-                Groepen beheren
-            </a>
-        </div>
     </header>
 
     <form

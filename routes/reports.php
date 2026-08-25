@@ -26,25 +26,3 @@ $router
         AdminMiddleware::class
     )
     ->name('reports.shift-attendance');
-
-$router
-    ->get(
-        '/reports/event-compensation',
-        [ReportController::class, 'eventCompensation']
-    )
-    ->middleware(
-        AuthMiddleware::class,
-        AdminMiddleware::class
-    )
-    ->name('reports.event-compensation');
-
-$router
-    ->get(
-        '/reports/event-compensation/export',
-        [ReportController::class, 'eventCompensationExport']
-    )
-    ->middleware(
-        AuthMiddleware::class,
-        AdminMiddleware::class
-    )
-    ->name('reports.event-compensation.export');

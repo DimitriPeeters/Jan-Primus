@@ -79,19 +79,6 @@ final class ShiftValidator
             );
         }
 
-        $compensation = (string) (
-            $data['vergoeding_bedrag'] ?? ''
-        );
-
-        if (
-            preg_match('/^\d{1,8}\.\d{2}$/', $compensation) !== 1
-            || (float) $compensation < 0
-        ) {
-            throw new InvalidArgumentException(
-                'De vergoeding moet een geldig bedrag met maximaal twee decimalen zijn.'
-            );
-        }
-
         $status = (string) ($data['status'] ?? '');
 
         if (!array_key_exists($status, Shift::statusOptions())) {

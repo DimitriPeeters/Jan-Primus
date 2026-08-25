@@ -100,10 +100,6 @@ if ($isAdmin) {
                         <dd><?= $shift->duurInMinuten() ?> minuten</dd>
                     </div>
                     <div>
-                        <dt>Vergoeding</dt>
-                        <dd><?= $this->escape($shift->displayVergoeding()) ?></dd>
-                    </div>
-                    <div>
                         <dt>Status</dt>
                         <dd>
                             <span class="badge <?= $this->escape($shift->statusCssClass()) ?>">

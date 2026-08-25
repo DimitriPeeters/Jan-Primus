@@ -27,15 +27,6 @@ final class SettingsRequest
             'mail_reply_to_address' => strtolower(
                 $this->text('mail_reply_to_address')
             ),
-            'default_shift_compensation' => $this->amount(
-                'default_shift_compensation'
-            ),
-            'group_supplement' => $this->amount(
-                'group_supplement'
-            ),
-            'default_event_uses_groups' => $this->checked(
-                'default_event_uses_groups'
-            ) ? '1' : '0',
         ];
     }
 
@@ -44,34 +35,4 @@ final class SettingsRequest
         return trim((string) ($this->input[$key] ?? ''));
     }
 
-    private function amount(string $key): string
-    {
-        $value = str_replace(
-            ['€', ' '],
-            '',
-            $this->text($key)
-        );
-
-        if (
-            preg_match('/^\d+(?:[,.]\d{1,2})?$/', $value) !== 1
-        ) {
-            return $value;
-        }
-
-        return number_format(
-            (float) str_replace(',', '.', $value),
-            2,
-            '.',
-            ''
-        );
-    }
-
-    private function checked(string $key): bool
-    {
-        return array_key_exists($key, $this->input)
-            && filter_var(
-                $this->input[$key],
-                FILTER_VALIDATE_BOOL
-            );
-    }
 }

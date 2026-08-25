@@ -32,12 +32,6 @@ final class EventMapper
             status: (string) (
                 $row['status'] ?? Event::STATUS_PUBLISHED
             ),
-            werktMetGroepen: (bool) (
-                $row['werkt_met_groepen'] ?? false
-            ),
-            groepstoeslagBedrag: (string) (
-                $row['groepstoeslag_bedrag'] ?? '10.00'
-            ),
             planningVerstuurd: $this->nullableString(
                 $row['planning_verstuurd'] ?? null
             ),
@@ -72,12 +66,6 @@ final class EventMapper
             'startdatum' => (string) $data['startdatum'],
             'einddatum' => $data['einddatum'],
             'status' => (string) $data['status'],
-            'werkt_met_groepen' => !empty(
-                $data['werkt_met_groepen']
-            ) ? 1 : 0,
-            'groepstoeslag_bedrag' => (string) (
-                $data['groepstoeslag_bedrag'] ?? '10.00'
-            ),
         ];
     }
 

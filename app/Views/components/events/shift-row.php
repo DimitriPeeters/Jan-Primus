@@ -85,33 +85,6 @@ $fieldId = static fn(string $field): string => sprintf(
             >
         </div>
 
-        <div class="form-group">
-            <label class="form-label" for="<?= $this->escape($fieldId('vergoeding_bedrag')) ?>">
-                Vergoeding per gewerkte shift <span class="event-form-required">*</span>
-            </label>
-            <input
-                type="text"
-                id="<?= $this->escape($fieldId('vergoeding_bedrag')) ?>"
-                name="<?= $this->escape($fieldName('vergoeding_bedrag')) ?>"
-                value="<?= $this->escape(
-                    (string) (
-                        $row['vergoeding_bedrag']
-                        ?? number_format(
-                            (float) $defaultShiftCompensation,
-                            2,
-                            ',',
-                            ''
-                        )
-                    )
-                ) ?>"
-                class="form-control"
-                placeholder="30,00"
-                pattern="[0-9]+(?:[,.][0-9]{1,2})?"
-                inputmode="decimal"
-                required
-            >
-        </div>
-
         <div class="form-group event-shift-field--full">
             <label class="form-label" for="<?= $this->escape($fieldId('naam')) ?>">
                 Interne shiftnaam

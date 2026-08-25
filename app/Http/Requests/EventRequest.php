@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Models\Shift;
 use App\Support\BelgianDateTime;
 
 final class EventRequest
@@ -13,10 +12,7 @@ final class EventRequest
      * @param array<string, mixed> $input
      */
     public function __construct(
-        private readonly array $input,
-        private readonly string $defaultShiftCompensation = Shift::DEFAULT_COMPENSATION,
-        private readonly bool $defaultUsesGroups = false,
-        private readonly string $defaultGroupSupplement = '10.00'
+        private readonly array $input
     ) {
     }
 
@@ -63,16 +59,6 @@ final class EventRequest
             'status' => trim(
                 (string) ($this->input['status'] ?? 'concept')
             ),
-            'werkt_met_groepen' => array_key_exists(
-                'werkt_met_groepen',
-                $this->input
-            )
-                ? $this->isChecked('werkt_met_groepen')
-                : $this->defaultUsesGroups,
-            'groepstoeslag_bedrag' => $this->normalizeAmount(
-                $this->input['groepstoeslag_bedrag']
-                ?? $this->defaultGroupSupplement
-            ),
         ];
     }
 
@@ -94,10 +80,7 @@ final class EventRequest
                 continue;
             }
 
-            $shifts[] = (new ShiftRequest(
-                $row,
-                $this->defaultShiftCompensation
-            ))->all();
+            $shifts[] = (new ShiftRequest($row))->all();
         }
 
         return $shifts;
@@ -126,35 +109,4 @@ final class EventRequest
         return false;
     }
 
-    private function isChecked(string $key): bool
-    {
-        if (!array_key_exists($key, $this->input)) {
-            return false;
-        }
-
-        return filter_var(
-            $this->input[$key],
-            FILTER_VALIDATE_BOOL
-        );
-    }
-
-    private function normalizeAmount(mixed $value): string
-    {
-        $value = str_replace(
-            ['€', ' '],
-            '',
-            trim((string) $value)
-        );
-
-        if (preg_match('/^\d+(?:[,.]\d{1,2})?$/', $value) !== 1) {
-            return $value;
-        }
-
-        return number_format(
-            (float) str_replace(',', '.', $value),
-            2,
-            '.',
-            ''
-        );
-    }
 }

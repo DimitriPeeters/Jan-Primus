@@ -30,10 +30,6 @@ final class ShiftMapper
             bijgewerktOp: $this->nullableString(
                 $row['bijgewerkt_op'] ?? null
             ),
-            vergoedingBedrag: (string) (
-                $row['vergoeding_bedrag']
-                ?? Shift::DEFAULT_COMPENSATION
-            ),
             eventTitel: $this->nullableString(
                 $row['event_titel'] ?? null
             ),
@@ -100,10 +96,6 @@ final class ShiftMapper
             'start_op' => (string) $data['start_op'],
             'eind_op' => (string) $data['eind_op'],
             'max_personen' => (int) $data['max_personen'],
-            'vergoeding_bedrag' => (string) (
-                $data['vergoeding_bedrag']
-                ?? Shift::DEFAULT_COMPENSATION
-            ),
             'status' => (string) (
                 $data['status'] ?? Shift::STATUS_ACTIEF
             ),
