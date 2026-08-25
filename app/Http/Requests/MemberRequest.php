@@ -81,14 +81,6 @@ final class MemberRequest
             ? $geboortedatum
             : null;
 
-        $data['rekeningnummer'] = strtoupper(
-            str_replace(
-                ' ',
-                '',
-                (string) ($data['rekeningnummer'] ?? '')
-            )
-        );
-
         $data['rijksregisternummer'] = trim(
             (string) ($data['rijksregisternummer'] ?? '')
         );
@@ -106,6 +98,13 @@ final class MemberRequest
 
         $data['gdpr_consent'] = isset($data['gdpr_consent'])
             && (string) $data['gdpr_consent'] === '1';
+
+        foreach (['toegetreden_op', 'uitgetreden_op'] as $dateField) {
+            $date = BelgianDateTime::normalizeDateInput(
+                $data[$dateField] ?? ''
+            );
+            $data[$dateField] = $date !== '' ? $date : null;
+        }
 
         return $data;
     }

@@ -536,15 +536,6 @@ $this->extend(
                 <table class="member-data">
                     <tbody>
                     <tr>
-                        <th scope="row">Rekeningnummer</th>
-                        <td>
-                            <?= $this->escape(
-                                $displayValue($lid->rekeningnummer)
-                            ) ?>
-                        </td>
-                    </tr>
-
-                    <tr>
                         <th scope="row">Nationaal identificatienummer</th>
                         <td>
                             <?php if ($lid->nationaalIdentificatienummerOnleesbaar): ?>

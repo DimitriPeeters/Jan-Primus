@@ -16,7 +16,7 @@ final class ShiftRegistrationRepository
             si.*,
             l.voornaam AS lid_voornaam,
             l.achternaam AS lid_achternaam,
-            l.email AS lid_email,
+            u.email AS lid_email,
             s.naam AS shift_naam,
             s.start_op AS shift_start_op,
             s.eind_op AS shift_eind_op,
@@ -33,6 +33,8 @@ final class ShiftRegistrationRepository
         FROM shift_inschrijvingen si
         INNER JOIN leden l
             ON l.lid_id = si.lid_id
+        INNER JOIN gebruikers u
+            ON u.lid_id = l.lid_id
         INNER JOIN shifts s
             ON s.shift_id = si.shift_id
         INNER JOIN evenementen e
@@ -72,7 +74,7 @@ final class ShiftRegistrationRepository
                 si.*,
                 l.voornaam AS lid_voornaam,
                 l.achternaam AS lid_achternaam,
-                l.email AS lid_email,
+                u.email AS lid_email,
                 s.naam AS shift_naam,
                 s.start_op AS shift_start_op,
                 s.eind_op AS shift_eind_op,
@@ -83,6 +85,8 @@ final class ShiftRegistrationRepository
             FROM shift_inschrijvingen si
             INNER JOIN leden l
                 ON l.lid_id = si.lid_id
+            INNER JOIN gebruikers u
+                ON u.lid_id = l.lid_id
             INNER JOIN shifts s
                 ON s.shift_id = si.shift_id
             INNER JOIN evenementen e

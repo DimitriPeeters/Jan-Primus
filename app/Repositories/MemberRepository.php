@@ -11,7 +11,7 @@ use PDO;
 
 final class MemberRepository
 {
-    private const DEFAULT_ORDER = 'voornaam ASC, achternaam ASC';
+    private const DEFAULT_ORDER = 'l.voornaam ASC, l.achternaam ASC';
 
     public function __construct(
         private readonly Database $database,
@@ -26,8 +26,9 @@ final class MemberRepository
     {
         $statement = $this->database->query(
             '
-            SELECT *
-            FROM leden
+            SELECT l.*, u.email
+            FROM leden l
+            INNER JOIN gebruikers u ON u.lid_id = l.lid_id
             ORDER BY ' . self::DEFAULT_ORDER
         );
 
@@ -51,12 +52,13 @@ final class MemberRepository
 
         $statement = $this->database->prepare(
             '
-            SELECT *
-            FROM leden
-            WHERE voornaam LIKE :zoek_voornaam
-               OR achternaam LIKE :zoek_achternaam
-               OR email LIKE :zoek_email
-               OR gemeente LIKE :zoek_gemeente
+            SELECT l.*, u.email
+            FROM leden l
+            INNER JOIN gebruikers u ON u.lid_id = l.lid_id
+            WHERE l.voornaam LIKE :zoek_voornaam
+               OR l.achternaam LIKE :zoek_achternaam
+               OR u.email LIKE :zoek_email
+               OR l.gemeente LIKE :zoek_gemeente
             ORDER BY ' . self::DEFAULT_ORDER
         );
 
@@ -86,8 +88,9 @@ final class MemberRepository
 
         $statement = $this->database->prepare(
             '
-            SELECT *
-            FROM leden
+            SELECT l.*, u.email
+            FROM leden l
+            INNER JOIN gebruikers u ON u.lid_id = l.lid_id
             ORDER BY ' . self::DEFAULT_ORDER . '
             LIMIT :offset, :limit
             '
@@ -177,9 +180,10 @@ final class MemberRepository
 
         $statement = $this->database->prepare(
             '
-            SELECT *
-            FROM leden
-            WHERE lid_id = :id
+            SELECT l.*, u.email
+            FROM leden l
+            INNER JOIN gebruikers u ON u.lid_id = l.lid_id
+            WHERE l.lid_id = :id
             LIMIT 1
             '
         );
@@ -205,9 +209,10 @@ final class MemberRepository
 
         $statement = $this->database->prepare(
             '
-            SELECT *
-            FROM leden
-            WHERE LOWER(email) = :email
+            SELECT l.*, u.email
+            FROM leden l
+            INNER JOIN gebruikers u ON u.lid_id = l.lid_id
+            WHERE LOWER(u.email) = :email
             LIMIT 1
             '
         );
@@ -236,7 +241,6 @@ final class MemberRepository
             (
                 voornaam,
                 achternaam,
-                email,
                 telefoon,
                 straat,
                 postcode,
@@ -244,13 +248,14 @@ final class MemberRepository
                 land,
                 geslacht,
                 geboortedatum,
-                rekeningnummer,
                 rijksregisternummer,
                 tshirtmaat,
                 opmerkingen,
                 actief,
                 gdpr_consent,
                 gdpr_timestamp,
+                toegetreden_op,
+                uitgetreden_op,
                 aangemaakt_op,
                 bijgewerkt_op
             )
@@ -258,7 +263,6 @@ final class MemberRepository
             (
                 :voornaam,
                 :achternaam,
-                :email,
                 :telefoon,
                 :straat,
                 :postcode,
@@ -266,13 +270,14 @@ final class MemberRepository
                 :land,
                 :geslacht,
                 :geboortedatum,
-                :rekeningnummer,
                 :rijksregisternummer,
                 :tshirtmaat,
                 :opmerkingen,
                 :actief,
                 :gdpr_consent,
                 :gdpr_timestamp,
+                :toegetreden_op,
+                :uitgetreden_op,
                 NOW(),
                 NOW()
             )
@@ -310,7 +315,6 @@ final class MemberRepository
             SET
                 voornaam = :voornaam,
                 achternaam = :achternaam,
-                email = :email,
                 telefoon = :telefoon,
                 straat = :straat,
                 postcode = :postcode,
@@ -318,13 +322,14 @@ final class MemberRepository
                 land = :land,
                 geslacht = :geslacht,
                 geboortedatum = :geboortedatum,
-                rekeningnummer = :rekeningnummer,
                 ' . $nationalIdentificationNumberUpdate . '
                 tshirtmaat = :tshirtmaat,
                 opmerkingen = :opmerkingen,
                 actief = :actief,
                 gdpr_consent = :gdpr_consent,
                 gdpr_timestamp = :gdpr_timestamp,
+                toegetreden_op = :toegetreden_op,
+                uitgetreden_op = :uitgetreden_op,
                 bijgewerkt_op = NOW()
             WHERE lid_id = :lid_id
             '
@@ -342,6 +347,15 @@ final class MemberRepository
             UPDATE leden
             SET
                 actief = :actief,
+                toegetreden_op = CASE
+                    WHEN :actief_toetreding = 1
+                    THEN COALESCE(toegetreden_op, CURDATE())
+                    ELSE toegetreden_op
+                END,
+                uitgetreden_op = CASE
+                    WHEN :actief_uittreding = 1 THEN NULL
+                    ELSE COALESCE(uitgetreden_op, CURDATE())
+                END,
                 bijgewerkt_op = NOW()
             WHERE lid_id = :id
             '
@@ -350,6 +364,8 @@ final class MemberRepository
         $statement->execute([
             'id' => $id,
             'actief' => $active ? 1 : 0,
+            'actief_toetreding' => $active ? 1 : 0,
+            'actief_uittreding' => $active ? 1 : 0,
         ]);
     }
 

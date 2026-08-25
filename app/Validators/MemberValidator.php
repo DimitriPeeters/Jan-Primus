@@ -18,9 +18,9 @@ final class MemberValidator
 
         $this->validatePostcode($data);
 
-        $this->validateIBAN($data);
-
         $this->validateNationalIdentificationNumber($data);
+
+        $this->validateRequiredDetails($data);
     }
 
     private function validateVoornaam(array $data): void
@@ -73,29 +73,6 @@ final class MemberValidator
         }
     }
 
-    private function validateIBAN(array $data): void
-    {
-        $iban = strtoupper(
-            str_replace(
-                ' ',
-                '',
-                trim((string)($data['rekeningnummer'] ?? ''))
-            )
-        );
-
-        if ($iban === '') {
-            return;
-        }
-
-        if (!preg_match('/^[A-Z]{2}[0-9]{2}[A-Z0-9]+$/', $iban)) {
-
-            throw new InvalidArgumentException(
-                'Ongeldig IBAN-rekeningnummer.'
-            );
-
-        }
-    }
-
     private function validateNationalIdentificationNumber(
         array $data
     ): void {
@@ -104,7 +81,9 @@ final class MemberValidator
         );
 
         if ($number === '') {
-            return;
+            throw new InvalidArgumentException(
+                'Nationaal identificatienummer is verplicht.'
+            );
         }
 
         $length = function_exists('mb_strlen')
@@ -115,6 +94,44 @@ final class MemberValidator
             throw new InvalidArgumentException(
                 'Het nationale identificatienummer mag maximaal 100 tekens bevatten.'
             );
+        }
+    }
+
+    private function validateRequiredDetails(array $data): void
+    {
+        $required = [
+            'telefoon' => 'Telefoonnummer',
+            'straat' => 'Straat en huisnummer',
+            'postcode' => 'Postcode',
+            'gemeente' => 'Gemeente',
+            'land' => 'Land',
+            'geboortedatum' => 'Geboortedatum',
+            'geslacht' => 'Geslacht',
+            'tshirtmaat' => 'T-shirtmaat',
+        ];
+
+        foreach ($required as $field => $label) {
+            if (trim((string) ($data[$field] ?? '')) === '') {
+                throw new InvalidArgumentException($label . ' is verplicht.');
+            }
+        }
+
+        $birthDate = (string) $data['geboortedatum'];
+        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $birthDate);
+        if ($date === false || $date->format('Y-m-d') !== $birthDate) {
+            throw new InvalidArgumentException('Ongeldige geboortedatum.');
+        }
+
+        if (!in_array((string) $data['geslacht'], ['M', 'V', 'X'], true)) {
+            throw new InvalidArgumentException('Ongeldige keuze voor geslacht.');
+        }
+
+        if (!in_array(
+            (string) $data['tshirtmaat'],
+            ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+            true
+        )) {
+            throw new InvalidArgumentException('Ongeldige T-shirtmaat.');
         }
     }
 }

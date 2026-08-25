@@ -132,10 +132,6 @@ $this->extend(
             <table class="profile-data">
                 <tbody>
                 <tr>
-                    <th scope="row">IBAN</th>
-                    <td><?= $this->escape($display($lid->rekeningnummer)) ?></td>
-                </tr>
-                <tr>
                     <th scope="row">Nationaal identificatienummer</th>
                     <td>
                         <?php if ($lid->nationaalIdentificatienummerOnleesbaar): ?>

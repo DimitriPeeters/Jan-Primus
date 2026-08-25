@@ -321,7 +321,7 @@ final class MailingRepository
                     TRIM(CONCAT_WS(' ', l.voornaam, l.achternaam)),
                     ''
                 ) AS naam,
-                LOWER(TRIM(l.email)) AS email,
+                LOWER(TRIM(u.email)) AS email,
                 EXISTS (
                     SELECT 1
                     FROM shift_inschrijvingen shift_registration
@@ -332,10 +332,11 @@ final class MailingRepository
                       AND shift_registration.status = 'bevestigd'
                 ) AS heeft_bevestigde_shift
             FROM leden l
+            INNER JOIN gebruikers u ON u.lid_id = l.lid_id
             WHERE l.actief = 1
-              AND l.email IS NOT NULL
-              AND TRIM(l.email) <> ''
-              AND l.email REGEXP '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$'
+              AND u.email IS NOT NULL
+              AND TRIM(u.email) <> ''
+              AND u.email REGEXP '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$'
               AND NOT EXISTS (
                   SELECT 1
                   FROM gebruikers blacklist
@@ -386,7 +387,7 @@ final class MailingRepository
                 l.lid_id,
                 l.voornaam,
                 l.achternaam,
-                l.email,
+                u.email,
                 NULLIF(TRIM(CONCAT_WS(' ', l.voornaam, l.achternaam)), '') AS naam,
                 s.shift_id,
                 s.naam AS shift_naam,
@@ -399,13 +400,15 @@ final class MailingRepository
                AND si.status = 'bevestigd'
             INNER JOIN leden l
                 ON l.lid_id = si.lid_id
+            INNER JOIN gebruikers u
+                ON u.lid_id = l.lid_id
             INNER JOIN shift_types st
                 ON st.type_id = s.type_id
             WHERE s.event_id = :event_id
               AND s.status = 'actief'
               AND l.actief = 1
-              AND l.email IS NOT NULL
-              AND TRIM(l.email) <> ''
+              AND u.email IS NOT NULL
+              AND TRIM(u.email) <> ''
               AND NOT EXISTS (
                   SELECT 1
                   FROM gebruikers blacklist
@@ -909,8 +912,8 @@ final class MailingRepository
     {
         $conditions = [
             'l.actief = 1',
-            'l.email IS NOT NULL',
-            "TRIM(l.email) <> ''",
+            'u.email IS NOT NULL',
+            "TRIM(u.email) <> ''",
             'NOT EXISTS (
                 SELECT 1
                 FROM gebruikers blacklist
@@ -932,10 +935,11 @@ final class MailingRepository
                     TRIM(CONCAT_WS(\' \', l.voornaam, l.achternaam)),
                     \'\'
                 ) AS naam,
-                LOWER(TRIM(l.email)) AS email
+                LOWER(TRIM(u.email)) AS email
             FROM leden l
+            INNER JOIN gebruikers u ON u.lid_id = l.lid_id
             WHERE ' . implode(PHP_EOL . ' AND ', $conditions) . '
-              AND l.email REGEXP \'^[^[:space:]@]+@[^[:space:]@]+\\.[^[:space:]@]+$\'
+              AND u.email REGEXP \'^[^[:space:]@]+@[^[:space:]@]+\\.[^[:space:]@]+$\'
             ORDER BY l.voornaam ASC, l.achternaam ASC, l.lid_id ASC'
         );
 

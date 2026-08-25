@@ -672,31 +672,6 @@ $gdprAccepted = filter_var(
 
                 <div class="registration-section__body registration-grid">
                     <div class="registration-field">
-                        <label for="rekeningnummer">
-                            IBAN
-                        </label>
-
-                        <input
-                            type="text"
-                            id="rekeningnummer"
-                            name="rekeningnummer"
-                            value="<?= $this->escape(
-                                (string) $value('rekeningnummer')
-                            ) ?>"
-                            autocomplete="off"
-                        >
-
-                        <small class="registration-help">
-                            Wordt versleuteld opgeslagen.
-                        </small>
-
-                        <?= $helpers->errorRenderer->field(
-                            $helpers->errors,
-                            'rekeningnummer'
-                        ) ?>
-                    </div>
-
-                    <div class="registration-field">
                         <label for="rijksregisternummer">
                             Nationaal identificatienummer
                         </label>

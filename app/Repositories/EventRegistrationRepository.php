@@ -16,7 +16,7 @@ final class EventRegistrationRepository
             ei.*,
             l.voornaam AS lid_voornaam,
             l.achternaam AS lid_achternaam,
-            l.email AS lid_email,
+            u.email AS lid_email,
             e.titel AS event_titel,
             e.startdatum AS event_startdatum,
             e.einddatum AS event_einddatum,
@@ -32,6 +32,8 @@ final class EventRegistrationRepository
         FROM event_inschrijvingen ei
         INNER JOIN leden l
             ON l.lid_id = ei.lid_id
+        INNER JOIN gebruikers u
+            ON u.lid_id = l.lid_id
         INNER JOIN evenementen e
             ON e.event_id = ei.event_id
         SQL;

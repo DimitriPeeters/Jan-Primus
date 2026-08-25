@@ -85,28 +85,24 @@ final class MemberService
             ) === '';
 
         $account = $this->users->findByMemberId($id);
+
+        if ($account === null) {
+            throw new InvalidArgumentException(
+                'Ieder lid moet een gekoppeld gebruikersaccount hebben.'
+            );
+        }
+
         $email = strtolower(
             trim((string) ($data['email'] ?? ''))
         );
 
-        if ($account !== null && $email === '') {
+        if ($email === '') {
             throw new InvalidArgumentException(
                 'E-mailadres is verplicht voor een gekoppeld gebruikersaccount.'
             );
         }
 
         if ($email !== '') {
-            $memberWithEmail = $this->members->findByEmail($email);
-
-            if (
-                $memberWithEmail !== null
-                && $memberWithEmail->lidId !== $id
-            ) {
-                throw new InvalidArgumentException(
-                    'Dit e-mailadres is reeds gekoppeld aan een ander lid.'
-                );
-            }
-
             $userWithEmail = $this->users->findByEmail($email);
 
             if (
@@ -117,6 +113,16 @@ final class MemberService
                     'Dit e-mailadres is reeds in gebruik.'
                 );
             }
+        }
+
+        $data['toegetreden_op'] = $member->toegetredenOp;
+        $data['uitgetreden_op'] = $member->uitgetredenOp;
+
+        if ((bool) $data['actief'] && !$member->actief) {
+            $data['toegetreden_op'] ??= date('Y-m-d');
+            $data['uitgetreden_op'] = null;
+        } elseif (!(bool) $data['actief'] && $member->actief) {
+            $data['uitgetreden_op'] ??= date('Y-m-d');
         }
 
         $this->database->transaction(
@@ -133,13 +139,11 @@ final class MemberService
                     $preserveNationalIdentificationNumber
                 );
 
-                if ($account !== null) {
-                    $this->users->updateEmailAndActiveByMemberId(
-                        $id,
-                        $email,
-                        (bool) $data['actief']
-                    );
-                }
+                $this->users->updateEmailAndActiveByMemberId(
+                    $id,
+                    $email,
+                    (bool) $data['actief']
+                );
             }
         );
 
@@ -155,8 +159,7 @@ final class MemberService
 
 
         if (
-            $account !== null
-            && (
+            (
                 $account->email !== $email
                 || $account->actief !== (bool) $data['actief']
             )
@@ -222,10 +225,6 @@ final class MemberService
      */
     private function auditValues(array $values): array
     {
-        if (array_key_exists('rekeningnummer', $values)) {
-            $values['rekeningnummer'] = '[afgeschermd]';
-        }
-
         if (array_key_exists('rijksregisternummer', $values)) {
             $values['rijksregisternummer'] = '[afgeschermd]';
         }

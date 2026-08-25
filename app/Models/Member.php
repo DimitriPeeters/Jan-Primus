@@ -32,8 +32,6 @@ final class Member
 
         public readonly ?string $geboortedatum,
 
-        public readonly ?string $rekeningnummer,
-
         public readonly ?string $rijksregisternummer,
 
         public readonly ?string $tshirtmaat,
@@ -49,6 +47,10 @@ final class Member
         public readonly ?string $aangemaaktOp,
 
         public readonly ?string $bijgewerktOp,
+
+        public readonly ?string $toegetredenOp,
+
+        public readonly ?string $uitgetredenOp,
 
         public readonly bool $nationaalIdentificatienummerOnleesbaar = false
 

@@ -71,12 +71,6 @@ final class MemberMapper
                 $row['geboortedatum'] ?? null
             ),
 
-            rekeningnummer: $this->encryption->decrypt(
-                $this->nullableString(
-                    $row['rekeningnummer'] ?? null
-                )
-            ),
-
             rijksregisternummer: $nationalIdentificationNumberIsUnreadable
                 ? null
                 : $this->encryption->decrypt(
@@ -107,6 +101,14 @@ final class MemberMapper
                 $row['bijgewerkt_op'] ?? null
             ),
 
+            toegetredenOp: $this->nullableString(
+                $row['toegetreden_op'] ?? null
+            ),
+
+            uitgetredenOp: $this->nullableString(
+                $row['uitgetreden_op'] ?? null
+            ),
+
             nationaalIdentificatienummerOnleesbaar:
                 $nationalIdentificationNumberIsUnreadable
         );
@@ -130,10 +132,6 @@ final class MemberMapper
 
             'achternaam' => $this->stringValue(
                 $data['achternaam'] ?? ''
-            ),
-
-            'email' => $this->nullableString(
-                $data['email'] ?? null
             ),
 
             'telefoon' => $this->nullableString(
@@ -164,12 +162,6 @@ final class MemberMapper
                 $data['geboortedatum'] ?? null
             ),
 
-            'rekeningnummer' => $this->encryption->encrypt(
-                $this->nullableString(
-                    $data['rekeningnummer'] ?? null
-                )
-            ),
-
             'rijksregisternummer' => $this->encryption->encrypt(
                 $this->nullableString(
                     $data['rijksregisternummer'] ?? null
@@ -193,6 +185,14 @@ final class MemberMapper
             'gdpr_timestamp' => $gdprConsent
                 ? $this->gdprTimestamp($data)
                 : null,
+
+            'toegetreden_op' => $this->nullableString(
+                $data['toegetreden_op'] ?? null
+            ),
+
+            'uitgetreden_op' => $this->nullableString(
+                $data['uitgetreden_op'] ?? null
+            ),
         ];
     }
 

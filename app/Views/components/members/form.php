@@ -33,7 +33,6 @@ $value = static function (
             ''
         ),
         'geslacht' => $lid->geslacht,
-        'rekeningnummer' => $lid->rekeningnummer,
         'rijksregisternummer' => $lid->rijksregisternummer,
         'tshirtmaat' => $lid->tshirtmaat,
         'opmerkingen' => $lid->opmerkingen,
@@ -454,30 +453,6 @@ $cancelUrl = $isEdit
 
         <div class="member-form__section-body">
             <div class="member-form__grid">
-                <div class="member-form__field">
-                    <label
-                        for="rekeningnummer"
-                        class="member-form__label"
-                    >
-                        IBAN
-                    </label>
-
-                    <input
-                        type="text"
-                        id="rekeningnummer"
-                        name="rekeningnummer"
-                        value="<?= $this->escape(
-                            (string) $value('rekeningnummer')
-                        ) ?>"
-                        class="member-form__control"
-                        autocomplete="off"
-                    >
-
-                    <small class="member-form__help">
-                        Het rekeningnummer wordt versleuteld opgeslagen.
-                    </small>
-                </div>
-
                 <div class="member-form__field">
                     <label
                         for="rijksregisternummer"

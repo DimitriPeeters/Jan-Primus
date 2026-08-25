@@ -226,20 +226,6 @@ $this->extend(
 
             <div class="profile-form__body profile-form__grid">
                 <label class="profile-form__field">
-                    <span>IBAN</span>
-                    <input
-                        type="text"
-                        name="rekeningnummer"
-                        value="<?= $this->escape((string) $value(
-                            'rekeningnummer',
-                            $lid->rekeningnummer
-                        )) ?>"
-                        autocomplete="off"
-                    >
-                    <small>Wordt versleuteld opgeslagen.</small>
-                </label>
-
-                <label class="profile-form__field">
                     <span>Nationaal identificatienummer</span>
                     <input
                         type="text"

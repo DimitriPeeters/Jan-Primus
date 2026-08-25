@@ -34,8 +34,7 @@ final class RegistrationService
         );
 
         if (
-            $this->members->findByEmail($email) !== null
-            || $this->users->findByEmail($email) !== null
+            $this->users->findByEmail($email) !== null
         ) {
             throw new InvalidArgumentException(
                 'Er bestaat al een registratie met dit e-mailadres.'
@@ -43,10 +42,11 @@ final class RegistrationService
         }
 
         $memberData = $data;
-        $memberData['email'] = $email;
         $memberData['actief'] = false;
         $memberData['gdpr_consent'] = true;
         $memberData['opmerkingen'] = '';
+        $memberData['toegetreden_op'] = null;
+        $memberData['uitgetreden_op'] = null;
 
         $this->database->transaction(
             function () use ($memberData, $data, $email): void {
@@ -144,7 +144,6 @@ final class RegistrationService
         unset(
             $data['password'],
             $data['password_confirmation'],
-            $data['rekeningnummer'],
             $data['rijksregisternummer'],
             $data['_token']
         );
