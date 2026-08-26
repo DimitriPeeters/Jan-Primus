@@ -6,6 +6,7 @@ namespace App\Mail;
 
 use AEFS\Core\Config;
 use App\Models\Event;
+use App\Models\Shift;
 use App\Services\SettingsService;
 use DateTimeImmutable;
 use RuntimeException;
@@ -220,6 +221,87 @@ final class MailTemplateRenderer
             $subject,
             $this->layout($subject, $firstName, $html),
             $this->plainLayout(implode(PHP_EOL, $textLines))
+        );
+    }
+
+    public function shiftUpdated(
+        Shift $oldShift,
+        Shift $updatedShift,
+        string $firstName
+    ): MailContent {
+        $subject = 'Shift gewijzigd: ' . $updatedShift->displayNaam();
+        $intro = 'De gegevens van een shift waarvoor je bent ingeschreven zijn gewijzigd.';
+        $changes = [];
+
+        $comparisons = [
+            'Functie' => [$oldShift->displayType(), $updatedShift->displayType()],
+            'Naam' => [$oldShift->displayNaam(), $updatedShift->displayNaam()],
+            'Datum en uren' => [$oldShift->displayPeriode(), $updatedShift->displayPeriode()],
+            'Capaciteit' => [(string) $oldShift->maxPersonen, (string) $updatedShift->maxPersonen],
+        ];
+
+        foreach ($comparisons as $label => [$oldValue, $newValue]) {
+            if ($oldValue !== $newValue) {
+                $changes[] = sprintf(
+                    '%s: %s → %s',
+                    $label,
+                    $oldValue,
+                    $newValue
+                );
+            }
+        }
+
+        $html = $this->paragraph($intro);
+        $html .= sprintf(
+            '<div style="padding:16px;margin:20px 0;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc">'
+            . '<strong style="display:block;color:#172033">%s</strong>'
+            . '<span style="display:block;margin-top:6px;color:#475569">%s</span>'
+            . '<span style="display:block;margin-top:4px;color:#475569">Functie: %s</span>'
+            . '<span style="display:block;margin-top:4px;color:#475569">Capaciteit: %d personen</span>'
+            . '</div>',
+            $this->escape($updatedShift->displayNaam()),
+            $this->escape($updatedShift->displayPeriode()),
+            $this->escape($updatedShift->displayType()),
+            $updatedShift->maxPersonen
+        );
+
+        if ($changes !== []) {
+            $html .= '<p style="margin:20px 0 8px;color:#172033"><strong>Wat is gewijzigd?</strong></p><ul style="margin:0 0 20px;padding-left:22px;color:#475569">';
+
+            foreach ($changes as $change) {
+                $html .= '<li style="margin:5px 0">' . $this->escape($change) . '</li>';
+            }
+
+            $html .= '</ul>';
+        }
+
+        $html .= $this->button(
+            'Shift bekijken',
+            '/shifts/' . $updatedShift->shiftId
+        );
+
+        $text = implode(PHP_EOL, [
+            $this->greeting($firstName),
+            '',
+            $intro,
+            '',
+            $updatedShift->displayNaam(),
+            'Datum en uren: ' . $updatedShift->displayPeriode(),
+            'Functie: ' . $updatedShift->displayType(),
+            'Capaciteit: ' . $updatedShift->maxPersonen . ' personen',
+            '',
+            'Wat is gewijzigd?',
+            ...array_map(
+                static fn(string $change): string => '- ' . $change,
+                $changes
+            ),
+            $this->plainUrl('/shifts/' . $updatedShift->shiftId),
+        ]);
+
+        return new MailContent(
+            $subject,
+            $this->layout($subject, $firstName, $html),
+            $this->plainLayout($text)
         );
     }
 

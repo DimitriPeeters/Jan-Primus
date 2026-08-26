@@ -66,6 +66,7 @@ final class Mailing
             'event_bevestigd' => 'Event bevestigd',
             'event_reserve' => 'Event reserve',
             'event_geannuleerd' => 'Event geannuleerd',
+            'shift_gewijzigd' => 'Shift gewijzigd',
             'shift_planning' => 'Shiftplanning',
             'wachtwoord_reset' => 'Wachtwoordherstel',
             'manueel' => 'Manuele mailing',

@@ -34,7 +34,8 @@ final class ShiftService
         private readonly EventRegistrationRepository $eventRegistrationRepository,
         private readonly ShiftValidator $shiftValidator,
         private readonly ShiftRegistrationValidator $registrationValidator,
-        private readonly AuditLogService $auditLog
+        private readonly AuditLogService $auditLog,
+        private readonly MailService $mailService
     ) {
     }
 
@@ -637,13 +638,28 @@ final class ShiftService
                     $data
                 );
 
+                $updatedShift = $this->shiftRepository->find($id);
+
+                if ($updatedShift === null) {
+                    throw new RuntimeException(
+                        'De bijgewerkte shift kon niet worden geladen.'
+                    );
+                }
+
                 $this->auditLog->updated(
                     entity: 'shift',
                     id: $id,
                     userId: Auth::id(),
                     oldValues: $shift->toAuditArray(),
-                    newValues: $data
+                    newValues: $updatedShift->toAuditArray()
                 );
+
+                if ($shift->toAuditArray() !== $updatedShift->toAuditArray()) {
+                    $this->mailService->queueShiftUpdated(
+                        $shift,
+                        $updatedShift
+                    );
+                }
             }
         );
     }

@@ -15,6 +15,7 @@ use App\Models\Event;
 use App\Models\EventRegistration;
 use App\Models\Mailing;
 use App\Models\MailingRecipient;
+use App\Models\Shift;
 use App\Models\User;
 use App\Repositories\EventRepository;
 use App\Repositories\MailingRepository;
@@ -185,6 +186,41 @@ final class MailService
                     $event,
                     (string) ($member['voornaam'] ?? ''),
                     (bool) ($member['heeft_bevestigde_shift'] ?? false)
+                )
+        );
+    }
+
+    public function queueShiftUpdated(
+        Shift $oldShift,
+        Shift $updatedShift
+    ): ?int {
+        $members = $this->repository
+            ->eligibleActiveMembersByShift($updatedShift->shiftId);
+
+        if ($members === []) {
+            return null;
+        }
+
+        return $this->createPersonalizedMailing(
+            type: 'shift_gewijzigd',
+            audienceType: 'automatisch',
+            audience: [
+                'event_id' => $updatedShift->eventId,
+                'shift_id' => $updatedShift->shiftId,
+                'inschrijvingsstatussen' => [
+                    'wachtend',
+                    'bevestigd',
+                    'reserve',
+                ],
+            ],
+            eventId: $updatedShift->eventId,
+            createdBy: Auth::id(),
+            members: $members,
+            content: fn(array $member): MailContent => $this->templates
+                ->shiftUpdated(
+                    $oldShift,
+                    $updatedShift,
+                    (string) ($member['voornaam'] ?? '')
                 )
         );
     }

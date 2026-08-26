@@ -264,6 +264,22 @@ final class MailingRepository
     }
 
     /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function eligibleActiveMembersByShift(int $shiftId): array
+    {
+        return $this->eligibleMembers(
+            'EXISTS (
+                SELECT 1
+                FROM shift_inschrijvingen si
+                WHERE si.lid_id = l.lid_id
+                  AND si.shift_id = ' . max(0, $shiftId) . '
+                  AND si.status IN (\'wachtend\', \'bevestigd\', \'reserve\')
+            )'
+        );
+    }
+
+    /**
      * @return array<string, mixed>|null
      */
     public function eligibleMember(int $memberId): ?array
