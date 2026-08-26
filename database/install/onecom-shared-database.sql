@@ -274,10 +274,6 @@ VALUES
   ('mail_reply_to_address', 'info@jan-primus.be', NULL)
 ON DUPLICATE KEY UPDATE `sleutel` = VALUES(`sleutel`);
 
-INSERT INTO `shift_types` (`naam`, `kleur`, `icoon`, `omschrijving`, `actief`)
-VALUES ('Steward', '#EF6012', 'user-check', 'Standaardfunctie voor medewerkers', 1)
-ON DUPLICATE KEY UPDATE `naam` = VALUES(`naam`);
-
 INSERT INTO ledenbeheer_migraties (migratie)
 VALUES ('20260825_000000_initial_shared_database')
 ON DUPLICATE KEY UPDATE `migratie` = VALUES(`migratie`);

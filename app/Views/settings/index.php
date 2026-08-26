@@ -311,7 +311,6 @@ $system = $status['system'];
                                 name="naam"
                                 maxlength="100"
                                 value="<?= $this->escape($type->naam) ?>"
-                                <?= $type->isDefault() ? 'readonly' : '' ?>
                                 required
                             >
                         </div>
@@ -349,21 +348,16 @@ $system = $status['system'];
                     </div>
 
                     <div class="settings-type-actions">
-                        <?php if ($type->isDefault()): ?>
-                            <input type="hidden" name="actief" value="1">
-                            <span class="settings-help">Steward is de verplichte standaardfunctie.</span>
-                        <?php else: ?>
-                            <input type="hidden" name="actief" value="0">
-                            <label class="settings-inline-checkbox">
-                                <input
-                                    name="actief"
-                                    type="checkbox"
-                                    value="1"
-                                    <?= $type->isActief() ? 'checked' : '' ?>
-                                >
-                                Actief
-                            </label>
-                        <?php endif; ?>
+                        <input type="hidden" name="actief" value="0">
+                        <label class="settings-inline-checkbox">
+                            <input
+                                name="actief"
+                                type="checkbox"
+                                value="1"
+                                <?= $type->isActief() ? 'checked' : '' ?>
+                            >
+                            Actief
+                        </label>
 
                         <button class="btn btn-secondary" type="submit">Opslaan</button>
                     </div>

@@ -126,7 +126,7 @@ final class Shift
 
     public function displayType(): string
     {
-        return $this->typeNaam ?? ShiftType::DEFAULT_NAME;
+        return $this->typeNaam ?? 'Shift';
     }
 
     public function displayDatum(): string

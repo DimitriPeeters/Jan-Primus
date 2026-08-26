@@ -31,7 +31,7 @@ van Ledenbeheer.
 - Het bevat geen `DROP`, `TRUNCATE`, `CREATE DATABASE` of `USE`.
 - WordPress-tabellen worden niet gelezen of gewijzigd door het schema.
 - Basisinstellingen worden alleen toegevoegd wanneer hun sleutel nog ontbreekt.
-- Het standaard shifttype `Steward` wordt idempotent toegevoegd.
+- Shiftfuncties worden door een administrator aangemaakt en beheerd; er is geen verplichte standaardfunctie.
 - Uitgevoerde installaties worden geregistreerd in `ledenbeheer_migraties`.
 
 Gebruik `database/database.sql` en de historische AEFS-cutoverbuilder nooit op

@@ -6,7 +6,6 @@ namespace App\Models;
 
 final class ShiftType
 {
-    public const DEFAULT_NAME = 'Steward';
     public const DEFAULT_COLOR = '#1E3A8A';
 
     public function __construct(
@@ -24,14 +23,6 @@ final class ShiftType
     public function isActief(): bool
     {
         return $this->actief;
-    }
-
-    public function isDefault(): bool
-    {
-        return strcasecmp(
-            $this->naam,
-            self::DEFAULT_NAME
-        ) === 0;
     }
 
     public function displayOmschrijving(): string

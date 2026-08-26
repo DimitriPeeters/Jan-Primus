@@ -123,8 +123,6 @@ final class ShiftService
      */
     public function activeTypes(): array
     {
-        $this->typeRepository->ensureDefault();
-
         return $this->typeRepository->active();
     }
 

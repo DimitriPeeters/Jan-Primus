@@ -14,7 +14,6 @@ use App\Repositories\SettingsRepository;
 use App\Repositories\ShiftTypeRepository;
 use App\Validators\SettingsValidator;
 use App\Validators\ShiftTypeValidator;
-use DomainException;
 use InvalidArgumentException;
 
 final class SettingsService
@@ -202,21 +201,6 @@ final class SettingsService
         if ($type === null) {
             throw new InvalidArgumentException(
                 'Shiftfunctie niet gevonden.'
-            );
-        }
-
-        if (
-            $type->isDefault()
-            && strcasecmp($type->naam, (string) $data['naam']) !== 0
-        ) {
-            throw new DomainException(
-                'De standaardfunctie Steward kan niet worden hernoemd.'
-            );
-        }
-
-        if ($type->isDefault() && !((bool) $data['actief'])) {
-            throw new DomainException(
-                'De standaardfunctie Steward moet actief blijven.'
             );
         }
 

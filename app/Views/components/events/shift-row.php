@@ -13,15 +13,6 @@ $defaultShiftCompensation ??= '30.00';
 
 $typeId = (int) ($row['type_id'] ?? 0);
 
-if ($typeId <= 0) {
-    foreach ($shiftTypes as $type) {
-        if ($type->isDefault()) {
-            $typeId = $type->typeId;
-            break;
-        }
-    }
-}
-
 $fieldName = static fn(string $field): string => sprintf(
     'shifts[%s][%s]',
     $index,

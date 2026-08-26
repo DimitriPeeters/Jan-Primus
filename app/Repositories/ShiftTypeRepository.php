@@ -8,7 +8,6 @@ use AEFS\Core\Database;
 use App\Mappers\ShiftTypeMapper;
 use App\Models\ShiftType;
 use PDO;
-use RuntimeException;
 
 final class ShiftTypeRepository
 {
@@ -217,30 +216,6 @@ final class ShiftTypeRepository
         $statement->execute($parameters);
 
         return (int) $statement->fetchColumn() > 0;
-    }
-
-    public function ensureDefault(): ShiftType
-    {
-        $type = $this->findByName(
-            ShiftType::DEFAULT_NAME
-        );
-
-        if ($type !== null) {
-            return $type;
-        }
-
-        $id = $this->create([
-            'naam' => ShiftType::DEFAULT_NAME,
-            'kleur' => ShiftType::DEFAULT_COLOR,
-            'icoon' => 'users',
-            'omschrijving' => 'Standaardfunctie voor vrijwilligers',
-            'actief' => true,
-        ]);
-
-        return $this->find($id)
-            ?? throw new RuntimeException(
-                'Het standaard shifttype kon niet worden aangemaakt.'
-            );
     }
 
     /**
