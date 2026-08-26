@@ -13,6 +13,7 @@ final class MailingValidator
     private const AUDIENCE_TYPES = [
         'alle_leden',
         'evenement',
+        'shift',
         'shifts',
     ];
 
@@ -52,14 +53,21 @@ final class MailingValidator
         }
 
         $requiredSelection = match ($audienceType) {
-            'evenement' => $data['event_ids'] ?? [],
+            'evenement' => [(int) ($data['event_id'] ?? 0)],
+            'shift' => [(int) ($data['shift_id'] ?? 0)],
             'shifts' => $data['shift_ids'] ?? [],
             default => [1],
         };
 
-        if (!is_array($requiredSelection) || $requiredSelection === []) {
+        if (
+            !is_array($requiredSelection)
+            || array_filter(
+                $requiredSelection,
+                static fn(mixed $id): bool => (int) $id > 0
+            ) === []
+        ) {
             throw new InvalidArgumentException(
-                'Selecteer minstens één evenement of shift.'
+                'Selecteer een evenement of minstens één shift.'
             );
         }
 

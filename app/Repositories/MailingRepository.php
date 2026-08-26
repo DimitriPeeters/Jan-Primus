@@ -272,7 +272,7 @@ final class MailingRepository
                 FROM shift_inschrijvingen si
                 WHERE si.lid_id = l.lid_id
                   AND si.shift_id IN (' . $this->integerList($shiftIds) . ')
-                  AND si.status IN (\'bevestigd\', \'reserve\')
+                  AND si.status IN (\'wachtend\', \'bevestigd\', \'reserve\')
             )'
         );
     }

@@ -439,7 +439,10 @@ final class MailService
         return match ($data['doelgroep_type'] ?? '') {
             'alle_leden' => $this->repository->eligibleAllMembers(),
             'evenement' => $this->repository->eligibleMembersByEvents(
-                $data['event_ids'] ?? []
+                [(int) ($data['event_id'] ?? 0)]
+            ),
+            'shift' => $this->repository->eligibleMembersByShifts(
+                [(int) ($data['shift_id'] ?? 0)]
             ),
             'shifts' => $this->repository->eligibleMembersByShifts(
                 $data['shift_ids'] ?? []
@@ -457,7 +460,10 @@ final class MailService
     {
         return match ($data['doelgroep_type'] ?? '') {
             'evenement' => [
-                'event_ids' => $data['event_ids'] ?? [],
+                'event_id' => (int) ($data['event_id'] ?? 0),
+            ],
+            'shift' => [
+                'shift_id' => (int) ($data['shift_id'] ?? 0),
             ],
             'shifts' => [
                 'shift_ids' => $data['shift_ids'] ?? [],

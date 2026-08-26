@@ -17,7 +17,8 @@ final class MailingRequest
     /**
      * @return array{
      *     doelgroep_type: string,
-     *     event_ids: int[],
+     *     event_id: int,
+     *     shift_id: int,
      *     shift_ids: int[],
      *     onderwerp: string,
      *     inhoud: string
@@ -29,9 +30,8 @@ final class MailingRequest
             'doelgroep_type' => trim(
                 (string) ($this->input['doelgroep_type'] ?? '')
             ),
-            'event_ids' => $this->integerList(
-                $this->input['event_ids'] ?? []
-            ),
+            'event_id' => max(0, (int) ($this->input['event_id'] ?? 0)),
+            'shift_id' => max(0, (int) ($this->input['shift_id'] ?? 0)),
             'shift_ids' => $this->integerList(
                 $this->input['shift_ids'] ?? []
             ),

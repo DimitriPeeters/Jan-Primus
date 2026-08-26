@@ -13,12 +13,10 @@ $audienceType = (string) $helpers->old->get(
     'doelgroep_type',
     'alle_leden'
 );
-$selectedEvents = $helpers->old->get('event_ids', []);
+$selectedEvent = (int) $helpers->old->get('event_id', 0);
+$selectedShift = (int) $helpers->old->get('shift_id', 0);
 $selectedShifts = $helpers->old->get('shift_ids', []);
 
-$selectedEvents = is_array($selectedEvents)
-    ? array_map('intval', $selectedEvents)
-    : [];
 $selectedShifts = is_array($selectedShifts)
     ? array_map('intval', $selectedShifts)
     : [];
@@ -79,10 +77,13 @@ $selectedShifts = is_array($selectedShifts)
                             Alle actieve leden
                         </option>
                         <option value="evenement" <?= $audienceType === 'evenement' ? 'selected' : '' ?>>
-                            Actieve inschrijvingen van één of meer evenementen
+                            Leden ingeschreven op een event
+                        </option>
+                        <option value="shift" <?= $audienceType === 'shift' ? 'selected' : '' ?>>
+                            Leden ingeschreven op een shift
                         </option>
                         <option value="shifts" <?= $audienceType === 'shifts' ? 'selected' : '' ?>>
-                            Bevestigde en reserveleden van bepaalde shifts
+                            Leden ingeschreven op meerdere shifts
                         </option>
                     </select>
                     <small>
@@ -91,18 +92,35 @@ $selectedShifts = is_array($selectedShifts)
                 </div>
 
                 <div class="form-group mailing-full-width" data-audience-panel="evenement" hidden>
-                    <label for="event_ids">Evenementen *</label>
-                    <select id="event_ids" name="event_ids[]" multiple size="8">
+                    <label for="event_id">Evenement *</label>
+                    <select id="event_id" name="event_id">
+                        <option value="">Selecteer een evenement</option>
                         <?php foreach ($options['events'] ?? [] as $event): ?>
                             <option
                                 value="<?= (int) $event['id'] ?>"
-                                <?= in_array((int) $event['id'], $selectedEvents, true) ? 'selected' : '' ?>
+                                <?= (int) $event['id'] === $selectedEvent ? 'selected' : '' ?>
                             >
                                 <?= $this->escape((string) $event['label']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                     <small>Wachtende, bevestigde en reserve-inschrijvingen worden meegenomen; geweigerde en uitgeschreven leden niet.</small>
+                </div>
+
+                <div class="form-group mailing-full-width" data-audience-panel="shift" hidden>
+                    <label for="shift_id">Shift *</label>
+                    <select id="shift_id" name="shift_id">
+                        <option value="">Selecteer een shift</option>
+                        <?php foreach ($options['shifts'] ?? [] as $shift): ?>
+                            <option
+                                value="<?= (int) $shift['id'] ?>"
+                                <?= (int) $shift['id'] === $selectedShift ? 'selected' : '' ?>
+                            >
+                                <?= $this->escape((string) $shift['label']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <small>Wachtende, bevestigde en reserve-inschrijvingen worden meegenomen.</small>
                 </div>
 
                 <div class="form-group mailing-full-width" data-audience-panel="shifts" hidden>
@@ -117,7 +135,7 @@ $selectedShifts = is_array($selectedShifts)
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <small>Een lid dat in meerdere geselecteerde shifts staat, ontvangt de mailing slechts één keer.</small>
+                    <small>Wachtende, bevestigde en reserve-inschrijvingen worden meegenomen. Een lid in meerdere geselecteerde shifts ontvangt de mailing slechts één keer.</small>
                 </div>
             </div>
         </section>
