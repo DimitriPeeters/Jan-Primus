@@ -118,7 +118,7 @@ final readonly class MailWorkerSchedulerMiddlewareTest
         ];
 
         if ($token !== null) {
-            $server['HTTP_X_AEFS_WORKER_TOKEN'] = $token;
+            $server['HTTP_X_JAN_PRIMUS_WORKER_TOKEN'] = $token;
         }
 
         return new Request(server: $server);

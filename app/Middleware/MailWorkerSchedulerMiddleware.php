@@ -11,7 +11,7 @@ use AEFS\Core\Http\Response;
 
 final class MailWorkerSchedulerMiddleware implements MiddlewareInterface
 {
-    public const TOKEN_HEADER = 'X-AEFS-Worker-Token';
+    public const TOKEN_HEADER = 'X-Jan-Primus-Worker-Token';
 
     private const TOKEN_PATTERN = '/^[a-f0-9]{64}$/i';
 

@@ -28,7 +28,7 @@ HTTPS-scheduler dezelfde queueprocessor activeren via:
 
 ```text
 POST /internal/mail-worker/process
-X-AEFS-Worker-Token: <256-bit token>
+X-Jan-Primus-Worker-Token: <256-bit token>
 ```
 
 Deze route is standaard uitgeschakeld. Ze wordt uitsluitend actief via het
@@ -49,7 +49,7 @@ Voor cron-job.org of een gelijkwaardige dienst:
 Frequentie: iedere minuut
 Methode: POST
 URL: https://alleventsforeversure.be/internal/mail-worker/process
-Headernaam: X-AEFS-Worker-Token
+Headernaam: X-Jan-Primus-Worker-Token
 Headerwaarde: token uit config/local/mail_worker.php
 Body: leeg
 ```

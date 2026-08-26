@@ -228,7 +228,7 @@ Configureer de externe scheduler iedere minuut met:
 ```text
 Methode: POST
 URL: https://alleventsforeversure.be/internal/mail-worker/process
-Header: X-AEFS-Worker-Token: <token uit config/local/mail_worker.php>
+Header: X-Jan-Primus-Worker-Token: <token uit config/local/mail_worker.php>
 Body: leeg
 ```
 
