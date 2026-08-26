@@ -1,4 +1,4 @@
-# AEFS v2 deployment naar one.com
+# Jan Primus Ledenbeheer deployment naar one.com
 
 Deze procedure maakt een controleerbare alfa-deployment. Ze houdt broncode,
 databasegegevens en geheimen bewust van elkaar gescheiden.
@@ -60,7 +60,7 @@ php bin/build-one-com-package.php
 Resultaat:
 
 ```text
-build/aefs-v2-one-com.zip
+build/jan-primus-ledenbeheer-one-com.zip
 ```
 
 Het pakket bevat de dependencies en legt de publieke assets in de webroot. De

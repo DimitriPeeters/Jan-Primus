@@ -16,7 +16,7 @@ $root = dirname(__DIR__);
 $buildDirectory = $root . DIRECTORY_SEPARATOR . 'build';
 $output = $buildDirectory
     . DIRECTORY_SEPARATOR
-    . 'aefs-v2-one-com.zip';
+    . 'jan-primus-ledenbeheer-one-com.zip';
 
 if (!is_dir($buildDirectory) && !mkdir($buildDirectory, 0775, true)) {
     throw new \RuntimeException('De buildmap kon niet worden aangemaakt.');
@@ -168,7 +168,7 @@ $addFile(
 );
 
 $zip->setArchiveComment(
-    'AEFS v2 productiepackage voor one.com; bevat bewust geen lokale geheimen of databasedump.'
+    'Jan Primus Ledenbeheer productiepackage voor one.com; bevat bewust geen lokale geheimen of databasedump.'
 );
 $zip->close();
 
