@@ -29,7 +29,7 @@ final class MailTemplateRenderer
             : null;
         $description = $event->hasDescription()
             ? (string) $event->beschrijving
-            : 'Bekijk het evenement in AEFS voor alle praktische informatie.';
+            : 'Bekijk het evenement in Ledenbeheer voor alle praktische informatie.';
         $details = array_filter([
             'Periode: ' . $event->displayDate(),
             $location,
@@ -309,7 +309,7 @@ final class MailTemplateRenderer
         string $firstName,
         string $token
     ): MailContent {
-        $subject = 'Stel je wachtwoord voor AEFS opnieuw in';
+        $subject = 'Stel je wachtwoord voor Ledenbeheer opnieuw in';
         $path = '/reset-password/' . rawurlencode($token);
         $url = $this->absoluteUrl($path);
 
@@ -320,7 +320,7 @@ final class MailTemplateRenderer
         }
 
         $html = $this->paragraph(
-            'We ontvingen een aanvraag om het wachtwoord van je AEFS-account opnieuw in te stellen.'
+            'We ontvingen een aanvraag om het wachtwoord van je Ledenbeheer-account opnieuw in te stellen.'
         );
         $html .= $this->paragraph(
             'Deze persoonlijke herstelkoppeling blijft één uur geldig en kan maar één keer worden gebruikt. Heb je dit niet aangevraagd, dan hoef je niets te doen.'
@@ -333,7 +333,7 @@ final class MailTemplateRenderer
         $text = implode(PHP_EOL, [
             $this->greeting($firstName),
             '',
-            'We ontvingen een aanvraag om het wachtwoord van je AEFS-account opnieuw in te stellen.',
+            'We ontvingen een aanvraag om het wachtwoord van je Ledenbeheer-account opnieuw in te stellen.',
             'Deze persoonlijke herstelkoppeling blijft één uur geldig en kan maar één keer worden gebruikt.',
             '',
             $url,
@@ -350,7 +350,7 @@ final class MailTemplateRenderer
 
     public function passwordResetSummary(): MailContent
     {
-        $subject = 'Stel je wachtwoord voor AEFS opnieuw in';
+        $subject = 'Stel je wachtwoord voor Ledenbeheer opnieuw in';
         $message = 'Een persoonlijke wachtwoordherstelmail werd aangemaakt. De beveiligde herstelkoppeling wordt niet in dit beheeroverzicht getoond.';
 
         return new MailContent(
@@ -408,17 +408,23 @@ final class MailTemplateRenderer
         string $firstName,
         string $content
     ): string {
+        $logoUrl = $this->absoluteUrl('/assets/images/jan-primus-logo.png');
+        $brand = $logoUrl !== null
+            ? '<img src="' . $this->escape($logoUrl) . '" width="76" height="76" alt="vzw Jan Primus" style="display:block;width:76px;height:76px;margin:0 auto 10px;object-fit:contain">'
+            : '';
+
         return '<!doctype html><html lang="nl-BE"><head><meta charset="UTF-8">'
             . '<meta name="viewport" content="width=device-width,initial-scale=1">'
             . '<title>' . $this->escape($preheader) . '</title></head>'
-            . '<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;color:#172033">'
+            . '<body style="margin:0;padding:0;background:#f7f4f1;font-family:Arial,sans-serif;color:#211711">'
             . '<span style="display:none;max-height:0;overflow:hidden">'
             . $this->escape($preheader)
             . '</span>'
-            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f1f5f9">'
+            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f4f1">'
             . '<tr><td align="center" style="padding:24px 12px">'
             . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#fff;border-radius:12px;overflow:hidden">'
-            . '<tr><td style="padding:20px 28px;background:#b5121b;color:#fff;font-weight:700;font-size:20px">'
+            . '<tr><td align="center" style="padding:18px 28px;background:#ef6012;color:#fff;font-weight:700;font-size:20px">'
+            . $brand
             . $this->escape($this->settings->applicationName())
             . '</td></tr>'
             . '<tr><td style="padding:28px;line-height:1.6">'
@@ -430,7 +436,7 @@ final class MailTemplateRenderer
             . $this->escape($this->settings->organizationName())
             . '</strong></p>'
             . '</td></tr></table>'
-            . '<p style="margin:14px 0 0;color:#64748b;font-size:12px">Deze mail werd verstuurd vanuit '
+            . '<p style="margin:14px 0 0;color:#76665c;font-size:12px">Deze mail werd verstuurd vanuit '
             . $this->escape($this->settings->applicationName())
             . '.</p>'
             . '</td></tr></table></body></html>';
@@ -468,7 +474,7 @@ final class MailTemplateRenderer
         }
 
         return sprintf(
-            '<p style="margin:22px 0 0"><a href="%s" style="display:inline-block;padding:12px 18px;border-radius:8px;background:#b5121b;color:#fff;text-decoration:none;font-weight:700">%s</a></p>',
+            '<p style="margin:22px 0 0"><a href="%s" style="display:inline-block;padding:12px 18px;border-radius:8px;background:#ef6012;color:#fff;text-decoration:none;font-weight:700">%s</a></p>',
             $this->escape($url),
             $this->escape($label)
         );

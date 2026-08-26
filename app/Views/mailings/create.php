@@ -28,7 +28,7 @@ $selectedShifts = is_array($selectedShifts)
         'page-header',
         [
             'title' => 'Nieuwe mailing',
-            'subtitle' => 'Schrijf één bericht; AEFS personaliseert en verstuurt elke mail afzonderlijk.',
+            'subtitle' => 'Schrijf één bericht; Ledenbeheer personaliseert en verstuurt elke mail afzonderlijk.',
             'actions' => sprintf(
                 '<a class="btn btn-secondary" href="%s">Annuleren</a>',
                 $this->escape($helpers->url->to('/mailings'))
@@ -171,7 +171,7 @@ $selectedShifts = is_array($selectedShifts)
                         (string) $helpers->old->get('inhoud', '')
                     ) ?></textarea>
                     <small>
-                        AEFS voegt automatisch “Beste [voornaam]” en de vaste afsluiting toe. Lege regels vormen afzonderlijke alinea’s.
+                        Ledenbeheer voegt automatisch “Beste [voornaam]” en de vaste afsluiting toe. Lege regels vormen afzonderlijke alinea’s.
                     </small>
                 </div>
 
