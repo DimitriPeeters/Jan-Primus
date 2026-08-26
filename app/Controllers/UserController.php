@@ -242,7 +242,13 @@ final class UserController extends BaseController
     {
         $token = $input['_token'] ?? null;
 
-        if (!is_string($token) || !$this->csrf->validate($token)) {
+        if (!is_string($token) || $token === '') {
+            throw new RuntimeException(
+                'De beveiligingstoken ontbreekt. Vernieuw de pagina en probeer opnieuw.'
+            );
+        }
+
+        if (!$this->csrf->validate($token)) {
             throw new RuntimeException(
                 'De beveiligingstoken is ongeldig of verlopen. Probeer opnieuw.'
             );

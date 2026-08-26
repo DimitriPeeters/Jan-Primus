@@ -32,6 +32,8 @@ $mailBlacklist = array_key_exists('mail_blacklist', $oldInput)
 ?>
 
 <div class="user-form">
+    <?= $helpers->csrf->field() ?>
+
     <div class="user-form__identity">
         <div>
             <span class="user-form__identity-label">Lid</span>
