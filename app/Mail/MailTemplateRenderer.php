@@ -34,24 +34,32 @@ final class MailTemplateRenderer
             $location,
         ]);
 
-        $html = $this->paragraph(
-            'Er werd een nieuw evenement gepubliceerd waarvoor je je kunt inschrijven.'
-        );
+        $intro = 'Er werd een nieuw evenement gepubliceerd waarvoor je je kunt inschrijven.';
+        $instructions = 'Je kunt je registreren voor één of meerdere eventdagen. Daarna kun je één of meerdere beschikbare shifts kiezen. Shifts mogen elkaar niet overlappen en je keuzes worden door een administrator beoordeeld.';
+
+        $html = $this->paragraph($intro);
+        $html .= $this->paragraph($instructions);
         $html .= $this->eventCard($event, $description);
         $html .= $this->button(
-            'Evenement bekijken',
+            'Eventdagen kiezen',
             '/events/' . $event->eventId
+        );
+        $html .= $this->button(
+            'Beschikbare shifts bekijken',
+            '/shifts'
         );
 
         $text = implode(PHP_EOL, [
             $this->greeting($firstName),
             '',
-            'Er werd een nieuw evenement gepubliceerd waarvoor je je kunt inschrijven.',
+            $intro,
+            $instructions,
             '',
             $event->titel,
             ...$details,
             $description,
             $this->plainUrl('/events/' . $event->eventId),
+            $this->plainUrl('/shifts'),
         ]);
 
         return new MailContent(

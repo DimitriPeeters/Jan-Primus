@@ -881,6 +881,8 @@ final class MailingRepository
     {
         $conditions = [
             'l.actief = 1',
+            'u.actief = 1',
+            "u.goedkeuringsstatus = 'goedgekeurd'",
             'u.email IS NOT NULL',
             "TRIM(u.email) <> ''",
             'NOT EXISTS (
