@@ -52,6 +52,20 @@ final class MailingRepository
             ON maker.lid_id = creator.lid_id
         SQL;
 
+    public function sentCountSinceSeconds(int $seconds): int
+    {
+        $seconds = max(1, min(86400, $seconds));
+
+        return (int) $this->database->query(
+            'SELECT COUNT(*)
+            FROM mailing_ontvangers
+            WHERE status = \'verzonden\'
+              AND verzonden_op >= DATE_SUB(NOW(), INTERVAL '
+                . $seconds
+                . ' SECOND)'
+        )->fetchColumn();
+    }
+
     public function __construct(
         private readonly Database $database,
         private readonly MailingMapper $mapper

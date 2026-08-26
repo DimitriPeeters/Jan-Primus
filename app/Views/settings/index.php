@@ -169,7 +169,9 @@ $system = $status['system'];
                         <span>Workerprofiel</span>
                         <strong>
                             <?= (int) $mail['batch_size'] ?> per run ·
-                            <?= (int) $mail['max_attempts'] ?> pogingen
+                            <?= (int) $mail['max_attempts'] ?> pogingen<br>
+                            <?= (int) $mail['rate_limit_per_minute'] ?> per minuut ·
+                            <?= (int) $mail['rate_limit_per_hour'] ?> per uur
                         </strong>
                     </div>
                     <div>

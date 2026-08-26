@@ -29,8 +29,43 @@ final class MailQueueProcessor
     public function process(?int $limit = null): array
     {
         $this->assertConfigured();
+        $lock = $this->acquireWorkerLock();
+
+        if ($lock === null) {
+            return [
+                'processed' => 0,
+                'sent' => 0,
+                'failed' => 0,
+            ];
+        }
+
+        try {
+            return $this->processLocked($limit);
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
+    }
+
+    private function processLocked(?int $limit = null): array
+    {
         $limit ??= (int) $this->config->get('mail.batch_size', 25);
         $limit = max(1, min(250, $limit));
+        $perMinute = max(
+            1,
+            (int) $this->config->get('mail.rate_limit_per_minute', 10)
+        );
+        $perHour = max(
+            $perMinute,
+            (int) $this->config->get('mail.rate_limit_per_hour', 200)
+        );
+        $intervalMicroseconds = max(
+            0,
+            (int) $this->config->get(
+                'mail.send_interval_milliseconds',
+                6000
+            ) * 1000
+        );
         $maxAttempts = max(
             1,
             (int) $this->config->get('mail.max_attempts', 5)
@@ -43,8 +78,16 @@ final class MailQueueProcessor
 
         $this->repository->releaseStaleLocks();
         $this->completeEventCancellations();
+        $lastAttemptAt = null;
 
         for ($index = 0; $index < $limit; $index++) {
+            if (
+                $this->repository->sentCountSinceSeconds(60) >= $perMinute
+                || $this->repository->sentCountSinceSeconds(3600) >= $perHour
+            ) {
+                break;
+            }
+
             $recipient = $this->repository->claimNext($maxAttempts);
 
             if ($recipient === null) {
@@ -54,6 +97,20 @@ final class MailQueueProcessor
             $recipientId = (int) $recipient['ontvanger_id'];
             $mailingId = (int) $recipient['mailing_id'];
             $result['processed']++;
+
+            if ($lastAttemptAt !== null && $intervalMicroseconds > 0) {
+                $elapsedMicroseconds = (int) round(
+                    (microtime(true) - $lastAttemptAt) * 1000000
+                );
+                $remainingMicroseconds = $intervalMicroseconds
+                    - $elapsedMicroseconds;
+
+                if ($remainingMicroseconds > 0) {
+                    usleep($remainingMicroseconds);
+                }
+            }
+
+            $lastAttemptAt = microtime(true);
 
             try {
                 $messageId = $this->transport->send(
@@ -89,6 +146,29 @@ final class MailQueueProcessor
         $this->completeEventCancellations();
 
         return $result;
+    }
+
+    /**
+     * @return resource|null
+     */
+    private function acquireWorkerLock()
+    {
+        $path = $this->application->storagePath('mail-worker.lock');
+        $lock = fopen($path, 'c+');
+
+        if ($lock === false) {
+            throw new RuntimeException(
+                'Het lockbestand van de mailworker kon niet worden geopend.'
+            );
+        }
+
+        if (!flock($lock, LOCK_EX | LOCK_NB)) {
+            fclose($lock);
+
+            return null;
+        }
+
+        return $lock;
     }
 
     private function completeEventCancellations(): void

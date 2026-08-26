@@ -4,6 +4,7 @@
 /storage/sessions/*
 /storage/mail-attachments/*
 !/storage/mail-attachments/.gitkeep
+/storage/*.lock
 /config/local/mail.php
 /config/local/mail-recipients.php
 /config/local/mail_worker.php

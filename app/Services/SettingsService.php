@@ -292,6 +292,20 @@ final class SettingsService
                     1,
                     (int) $this->config->get('mail.batch_size', 25)
                 ),
+                'rate_limit_per_minute' => max(
+                    1,
+                    (int) $this->config->get(
+                        'mail.rate_limit_per_minute',
+                        10
+                    )
+                ),
+                'rate_limit_per_hour' => max(
+                    1,
+                    (int) $this->config->get(
+                        'mail.rate_limit_per_hour',
+                        200
+                    )
+                ),
                 'max_attempts' => max(
                     1,
                     (int) $this->config->get('mail.max_attempts', 5)
