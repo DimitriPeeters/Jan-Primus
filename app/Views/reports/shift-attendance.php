@@ -127,7 +127,7 @@ $this->extend(
             <header class="attendance-sheet__header">
                 <div>
                     <span class="attendance-sheet__brand">
-                        <?= $this->escape($applicationName ?? 'AEFS Eventbeheer') ?>
+                        <?= $this->escape($applicationName ?? 'Ledenbeheer') ?>
                     </span>
                     <h1 id="attendance-title">Aanwezigheidslijst</h1>
                     <p><?= $this->escape($shift->eventTitel ?? 'Evenement') ?></p>
@@ -246,7 +246,7 @@ $this->extend(
             <?php endif; ?>
 
             <p class="attendance-sheet__note">
-                Wijzigingen aan de vakjes worden onmiddellijk in AEFS opgeslagen.
+                Wijzigingen aan de vakjes worden onmiddellijk in Ledenbeheer opgeslagen.
                 Op de afgedrukte lijst kunnen ze ook handmatig worden aangevuld.
             </p>
         </section>

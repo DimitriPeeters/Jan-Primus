@@ -19,7 +19,7 @@ $this->extend(
         'page-header',
         [
             'title' => 'Rapporten',
-            'subtitle' => 'Maak operationele lijsten op basis van de actuele AEFS-gegevens.',
+            'subtitle' => 'Maak operationele lijsten op basis van de actuele gegevens in Ledenbeheer.',
         ]
     ) ?>
 
@@ -42,6 +42,31 @@ $this->extend(
                     class="btn btn-primary"
                     href="<?= $this->escape(
                         $helpers->url->to('/reports/shift-attendance')
+                    ) ?>"
+                >
+                    Rapport openen
+                </a>
+            </div>
+        </article>
+
+        <article class="card report-card">
+            <header class="card__header">
+                <div>
+                    <span class="report-card__type">Eventdagen</span>
+                    <h2 class="card__title">Aanwezigheidslijst per dag</h2>
+                </div>
+            </header>
+
+            <div class="card__body report-card__body">
+                <p>
+                    Selecteer een datum en bekijk alle bevestigde medewerkers
+                    alfabetisch op achternaam, met hun shifts en aanwezigheidsvakjes.
+                </p>
+
+                <a
+                    class="btn btn-primary"
+                    href="<?= $this->escape(
+                        $helpers->url->to('/reports/day-attendance')
                     ) ?>"
                 >
                     Rapport openen

@@ -144,7 +144,7 @@ def build_manual() -> None:
     story.append(PageBreak())
 
     section(story, "8", "Rapporten en aanwezigheid", "Rapporten ondersteunen de praktische eventopvolging. Jan Primus doet geen uitbetalingen aan leden; IBAN en vergoedingsrapportering maken daarom geen deel uit van deze toepassing.")
-    story.append(process_table([("Kies event", "Open Rapporten en selecteer het gewenste evenement of de gewenste shift."), ("Aanwezigheid", "Controleer de bevestigde medewerkers en registreer hun aanwezigheid."), ("Nakijken", "Vergelijk de lijst met de werkelijke planning en corrigeer fouten."), ("Privacy", "Bewaar of deel rapporten alleen zolang en met wie dit voor de organisatie nodig is.")]))
+    story.append(process_table([("Per shift", "Selecteer één shift en registreer de aanwezigheid van iedere bevestigde medewerker."), ("Per dag", "Selecteer een datum. Ieder lid staat alfabetisch op achternaam één keer in de lijst, met afzonderlijke vakjes voor alle shifts van die dag."), ("Walkie", "Vul optioneel een nummer van maximaal 10 karakters in. Dit wordt per lid en dag bewaard."), ("Oortje", "Vink optioneel aan of het lid die dag een oortje heeft ontvangen."), ("Nakijken", "Vergelijk de lijst met de werkelijke planning en corrigeer fouten."), ("Privacy", "Bewaar of deel rapporten alleen zolang en met wie dit voor de organisatie nodig is.")]))
     story.append(PageBreak())
 
     section(story, "9", "Instellingen en testchecklist", "De instellingenpagina bevat de organisatienaam, mailafzender, reply-adres, operationele status en het beheer van shiftfuncties.")

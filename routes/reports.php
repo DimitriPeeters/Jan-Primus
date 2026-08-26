@@ -26,3 +26,25 @@ $router
         AdminMiddleware::class
     )
     ->name('reports.shift-attendance');
+
+$router
+    ->get(
+        '/reports/day-attendance',
+        [ReportController::class, 'dayAttendance']
+    )
+    ->middleware(
+        AuthMiddleware::class,
+        AdminMiddleware::class
+    )
+    ->name('reports.day-attendance');
+
+$router
+    ->post(
+        '/reports/day-attendance/details',
+        [ReportController::class, 'saveDayAttendanceDetails']
+    )
+    ->middleware(
+        AuthMiddleware::class,
+        AdminMiddleware::class
+    )
+    ->name('reports.day-attendance.details');

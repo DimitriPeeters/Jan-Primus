@@ -50,6 +50,7 @@ $tables = [
     'shift_types',
     'shifts',
     'shift_inschrijvingen',
+    'dag_aanwezigheden',
     'mailings',
     'mailing_bijlagen',
     'mailing_ontvangers',
