@@ -8,7 +8,8 @@ final class AssetHelper
 {
     public function __construct(
         private readonly string $baseUrl = '',
-        private readonly string $assetPath = 'assets'
+        private readonly string $assetPath = 'assets',
+        private readonly string $version = ''
     ) {
     }
 
@@ -24,7 +25,12 @@ final class AssetHelper
             static fn (string $segment): bool => $segment !== ''
         );
 
-        return implode('/', $segments);
+        $url = implode('/', $segments);
+        $version = trim($this->version);
+
+        return $version !== ''
+            ? $url . '?v=' . rawurlencode($version)
+            : $url;
     }
 
     public function css(string $path): string

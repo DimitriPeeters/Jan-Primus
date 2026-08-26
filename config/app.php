@@ -16,6 +16,10 @@ $configuration = [
 
     'name' => 'Ledenbeheer',
 
+    // Verhoog deze waarde bij visuele releases zodat browsers vernieuwde
+    // CSS, JavaScript en afbeeldingen onmiddellijk ophalen.
+    'asset_version' => '20260826.1',
+
     /*
     |--------------------------------------------------------------------------
     | Base URL

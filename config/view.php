@@ -41,5 +41,9 @@ return [
 
     'asset_path' => 'assets',
 
+    'asset_version' => trim(
+        (string) ($appConfiguration['asset_version'] ?? '')
+    ),
+
     'debug' => $environment !== 'production',
 ];

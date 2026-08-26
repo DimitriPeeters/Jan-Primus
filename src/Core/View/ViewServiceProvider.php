@@ -44,6 +44,12 @@ final class ViewServiceProvider implements ViewServiceProviderInterface
             'assets'
         );
 
+        $assetVersion = $this->stringValue(
+            $config,
+            'asset_version',
+            ''
+        );
+
         $debug = $this->boolValue(
             $config,
             'debug',
@@ -83,7 +89,8 @@ final class ViewServiceProvider implements ViewServiceProviderInterface
             AssetHelper::class,
             static fn (): AssetHelper => new AssetHelper(
                 $baseUrl,
-                $assetPath
+                $assetPath,
+                $assetVersion
             )
         );
 
