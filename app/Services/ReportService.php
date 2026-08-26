@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Models\Shift;
 use App\Models\ShiftRegistration;
+use App\Models\Event;
+use App\Models\EventRegistration;
 use App\Repositories\DailyAttendanceRepository;
 use DateTimeImmutable;
 
@@ -13,7 +15,8 @@ final class ReportService
 {
     public function __construct(
         private readonly ShiftService $shiftService,
-        private readonly DailyAttendanceRepository $dailyAttendance
+        private readonly DailyAttendanceRepository $dailyAttendance,
+        private readonly EventService $eventService
     ) {
     }
 
@@ -238,5 +241,66 @@ final class ReportService
             $walkieNumber,
             $earpiece
         );
+    }
+
+    /** @return Event[] */
+    public function eventsForParticipantList(): array
+    {
+        $events = $this->eventService->allForAdministration();
+        usort(
+            $events,
+            static fn(Event $left, Event $right): int =>
+                strcmp($right->startDatum, $left->startDatum)
+                ?: $right->eventId <=> $left->eventId
+        );
+
+        return $events;
+    }
+
+    /**
+     * @return array{event: Event, registrations: EventRegistration[]}|null
+     */
+    public function eventParticipants(int $eventId): ?array
+    {
+        if ($eventId <= 0) {
+            return null;
+        }
+
+        $event = $this->eventService->find($eventId);
+
+        if ($event === null) {
+            return null;
+        }
+
+        $registrations = array_values(array_filter(
+            $this->eventService->registrationsForEvent($eventId),
+            static fn(EventRegistration $registration): bool =>
+                $registration->isActief()
+        ));
+
+        usort($registrations, static function (
+            EventRegistration $left,
+            EventRegistration $right
+        ): int {
+            $lastName = strnatcasecmp(
+                trim((string) $left->lidAchternaam),
+                trim((string) $right->lidAchternaam)
+            );
+
+            if ($lastName !== 0) {
+                return $lastName;
+            }
+
+            $firstName = strnatcasecmp(
+                trim((string) $left->lidVoornaam),
+                trim((string) $right->lidVoornaam)
+            );
+
+            return $firstName !== 0
+                ? $firstName
+                : $left->lidId <=> $right->lidId;
+        });
+
+        return ['event' => $event, 'registrations' => $registrations];
     }
 }

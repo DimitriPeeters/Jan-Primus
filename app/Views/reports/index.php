@@ -74,6 +74,31 @@ $this->extend(
             </div>
         </article>
 
+        <article class="card report-card">
+            <header class="card__header">
+                <div>
+                    <span class="report-card__type">Evenementen</span>
+                    <h2 class="card__title">Ingeschreven leden per evenement</h2>
+                </div>
+            </header>
+
+            <div class="card__body report-card__body">
+                <p>
+                    Maak een afdrukbare, alfabetische lijst van alle unieke leden
+                    met een actuele inschrijving voor het geselecteerde evenement.
+                </p>
+
+                <a
+                    class="btn btn-primary"
+                    href="<?= $this->escape(
+                        $helpers->url->to('/reports/event-participants')
+                    ) ?>"
+                >
+                    Rapport openen
+                </a>
+            </div>
+        </article>
+
     </div>
 </div>
 <?php $this->endSection(); ?>

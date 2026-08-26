@@ -122,4 +122,34 @@ final class ReportController extends BaseController
 
         return $this->redirect('/reports/day-attendance?date=' . rawurlencode($date));
     }
+
+    public function eventParticipants(): Response
+    {
+        $eventId = max(0, (int) $this->request()->query->get('event_id', 0));
+        $report = $eventId > 0
+            ? $this->service->eventParticipants($eventId)
+            : null;
+
+        if ($eventId > 0 && $report === null) {
+            return $this->view(
+                'core::errors.404',
+                [
+                    'title' => 'Evenement niet gevonden',
+                    'message' => 'Het gekozen evenement bestaat niet.',
+                ],
+                404
+            );
+        }
+
+        return $this->view(
+            'reports.event-participants',
+            [
+                'title' => 'Ingeschreven leden per evenement',
+                'events' => $this->service->eventsForParticipantList(),
+                'selectedEventId' => $eventId,
+                'event' => $report['event'] ?? null,
+                'registrations' => $report['registrations'] ?? [],
+            ]
+        );
+    }
 }

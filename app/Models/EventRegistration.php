@@ -158,13 +158,16 @@ final class EventRegistration
             return 'Niet afzonderlijk vastgelegd';
         }
 
+        $days = array_values(array_unique($this->dagen));
+        sort($days);
+
         return implode(
             ', ',
             array_map(
                 static fn(string $datum): string => (
                     new DateTimeImmutable($datum)
                 )->format('d/m/Y'),
-                $this->dagen
+                $days
             )
         );
     }

@@ -48,3 +48,14 @@ $router
         AdminMiddleware::class
     )
     ->name('reports.day-attendance.details');
+
+$router
+    ->get(
+        '/reports/event-participants',
+        [ReportController::class, 'eventParticipants']
+    )
+    ->middleware(
+        AuthMiddleware::class,
+        AdminMiddleware::class
+    )
+    ->name('reports.event-participants');
