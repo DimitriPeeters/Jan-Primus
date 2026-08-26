@@ -60,7 +60,7 @@ $this->extend('layouts.app', [
                 class="dashboard-manual"
                 href="<?= $this->escape(
                     $helpers->asset->url(
-                        'docs/aefs-v2-adminhandleiding.pdf'
+                        'docs/jan-primus-adminhandleiding.pdf'
                     )
                 ) ?>"
                 target="_blank"
