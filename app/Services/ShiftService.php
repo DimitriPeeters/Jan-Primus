@@ -312,6 +312,13 @@ final class ShiftService
                     );
                 }
 
+                $this->assertNoScheduleOverlap(
+                    $memberId,
+                    $shift->startOp,
+                    $shift->eindOp,
+                    $shift->shiftId
+                );
+
                 $existing = $this->registrationRepository
                     ->findByShiftAndMember($shiftId, $memberId);
 
@@ -413,6 +420,13 @@ final class ShiftService
                         'Je bent voor dit evenement of deze eventdag niet ingeschreven.'
                     );
                 }
+
+                $this->assertNoScheduleOverlap(
+                    $memberId,
+                    $shift->startOp,
+                    $shift->eindOp,
+                    $shift->shiftId
+                );
 
                 $existing = $this->registrationRepository
                     ->findByShiftAndMember($shiftId, $memberId);
@@ -592,6 +606,29 @@ final class ShiftService
                             'De capaciteit kan niet lager zijn dan het huidige aantal van %d bevestigde vrijwilligers.',
                             $confirmedCount
                         )
+                    );
+                }
+
+                $activeRegistrations = array_values(
+                    array_filter(
+                        $this->registrationRepository->findByShift($id),
+                        static fn (ShiftRegistration $registration): bool =>
+                            $registration->isActief()
+                    )
+                );
+
+                usort(
+                    $activeRegistrations,
+                    static fn (ShiftRegistration $left, ShiftRegistration $right): int =>
+                        $left->lidId <=> $right->lidId
+                );
+
+                foreach ($activeRegistrations as $registration) {
+                    $this->assertNoScheduleOverlap(
+                        $registration->lidId,
+                        (string) $data['start_op'],
+                        (string) $data['eind_op'],
+                        $id
                     );
                 }
 
@@ -993,6 +1030,13 @@ final class ShiftService
                             'Alleen bevestigde evenementdeelnemers die voor deze dag beschikbaar zijn, kunnen worden toegewezen.'
                         );
                     }
+
+                    $this->assertNoScheduleOverlap(
+                        $registration->lidId,
+                        $shift->startOp,
+                        $shift->eindOp,
+                        $shift->shiftId
+                    );
                 }
 
                 if (
@@ -1053,6 +1097,39 @@ final class ShiftService
             ->format('Y-m-d');
 
         return $registration->coversDate($shiftDate);
+    }
+
+    private function assertNoScheduleOverlap(
+        int $memberId,
+        string $startAt,
+        string $endAt,
+        int $excludeShiftId
+    ): void {
+        $this->registrationRepository->lockMemberSchedule($memberId);
+        $overlap = $this->registrationRepository->findOverlapForUpdate(
+            $memberId,
+            $startAt,
+            $endAt,
+            $excludeShiftId
+        );
+
+        if ($overlap === null) {
+            return;
+        }
+
+        $start = (new DateTimeImmutable($overlap['start_op']))
+            ->format('d/m/Y H:i');
+        $end = (new DateTimeImmutable($overlap['eind_op']))
+            ->format('H:i');
+
+        throw new DomainException(
+            sprintf(
+                'Dit lid is al ingeschreven voor “%s” van %s tot %s. Overlappende shifts zijn niet toegestaan.',
+                $overlap['naam'],
+                $start,
+                $end
+            )
+        );
     }
 
     private function cancelRegistration(

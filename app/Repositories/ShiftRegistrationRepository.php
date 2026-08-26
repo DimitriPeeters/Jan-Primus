@@ -241,6 +241,63 @@ final class ShiftRegistrationRepository
         );
     }
 
+    public function lockMemberSchedule(int $memberId): void
+    {
+        $statement = $this->database->prepare(<<<'SQL'
+            SELECT lid_id
+            FROM leden
+            WHERE lid_id = :lid_id
+            FOR UPDATE
+            SQL);
+        $statement->execute(['lid_id' => $memberId]);
+    }
+
+    /**
+     * @return array{naam: string, start_op: string, eind_op: string}|null
+     */
+    public function findOverlapForUpdate(
+        int $memberId,
+        string $startAt,
+        string $endAt,
+        int $excludeShiftId
+    ): ?array {
+        $statement = $this->database->prepare(<<<'SQL'
+            SELECT
+                COALESCE(NULLIF(TRIM(s.naam), ''), st.naam, 'Shift') AS naam,
+                s.start_op,
+                s.eind_op
+            FROM shift_inschrijvingen si
+            INNER JOIN shifts s ON s.shift_id = si.shift_id
+            INNER JOIN shift_types st ON st.type_id = s.type_id
+            WHERE si.lid_id = :lid_id
+              AND si.status IN ('wachtend', 'bevestigd', 'reserve')
+              AND s.status = 'actief'
+              AND s.shift_id <> :exclude_shift_id
+              AND s.start_op < :new_end_at
+              AND s.eind_op > :new_start_at
+            ORDER BY s.start_op ASC, si.inschrijving_id ASC
+            LIMIT 1
+            FOR UPDATE
+            SQL);
+
+        $statement->execute([
+            'lid_id' => $memberId,
+            'exclude_shift_id' => $excludeShiftId,
+            'new_start_at' => $startAt,
+            'new_end_at' => $endAt,
+        ]);
+
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return is_array($row)
+            ? [
+                'naam' => (string) $row['naam'],
+                'start_op' => (string) $row['start_op'],
+                'eind_op' => (string) $row['eind_op'],
+            ]
+            : null;
+    }
+
     public function assign(
         int $shiftId,
         int $memberId,
