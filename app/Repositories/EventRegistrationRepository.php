@@ -121,7 +121,7 @@ final class EventRegistrationRepository
     /**
      * @return EventRegistration[]
      */
-    public function findConfirmedEligibleForShift(
+    public function findEligibleForShift(
         int $eventId,
         int $shiftId,
         string $shiftDate
@@ -131,7 +131,7 @@ final class EventRegistrationRepository
             . PHP_EOL
             . <<<'SQL'
                 WHERE ei.event_id = :event_id
-                  AND ei.status = :confirmed_status
+                  AND ei.status <> :rejected_status
                   AND ei.uitgeschreven_op IS NULL
                   AND ei.annulatie_aangevraagd_op IS NULL
                   AND (
@@ -163,7 +163,7 @@ final class EventRegistrationRepository
 
         $statement->execute([
             'event_id' => $eventId,
-            'confirmed_status' => EventRegistration::STATUS_BEVESTIGD,
+            'rejected_status' => EventRegistration::STATUS_GEWEIGERD,
             'selected_shift_date' => $shiftDate,
             'legacy_shift_date' => $shiftDate,
             'shift_id' => $shiftId,

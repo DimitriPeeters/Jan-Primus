@@ -148,6 +148,22 @@ $router
 
 $router
     ->post(
+        '/shifts/{id}/register',
+        [ShiftController::class, 'register']
+    )
+    ->middleware(AuthMiddleware::class)
+    ->name('shifts.register');
+
+$router
+    ->post(
+        '/shifts/{id}/withdraw',
+        [ShiftController::class, 'withdraw']
+    )
+    ->middleware(AuthMiddleware::class)
+    ->name('shifts.withdraw');
+
+$router
+    ->post(
         '/shift-registrations/{registrationId}/approve',
         [
             ShiftController::class,

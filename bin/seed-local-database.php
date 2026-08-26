@@ -127,6 +127,64 @@ $database->transaction(function () use (
                 'event_id_3' => $eventId,
             ]);
     }
+
+    $database->query(<<<'SQL'
+        INSERT INTO event_inschrijvingen
+            (event_id, lid_id, status, aangemeld_op)
+        SELECT e.event_id, l.lid_id, 'bevestigd', NOW()
+        FROM evenementen e
+        INNER JOIN leden l ON l.voornaam = 'Anke' AND l.achternaam = 'Janssens'
+        WHERE e.titel = 'Primusfeesten 2026'
+        ON DUPLICATE KEY UPDATE
+            status = 'bevestigd',
+            annulatie_aangevraagd_op = NULL,
+            uitgeschreven_op = NULL
+        SQL);
+
+    $database->query(<<<'SQL'
+        INSERT IGNORE INTO event_inschrijving_dagen (inschrijving_id, datum)
+        SELECT ei.inschrijving_id, '2026-09-05'
+        FROM event_inschrijvingen ei
+        INNER JOIN evenementen e ON e.event_id = ei.event_id
+        INNER JOIN leden l ON l.lid_id = ei.lid_id
+        WHERE e.titel = 'Primusfeesten 2026'
+          AND l.voornaam = 'Anke'
+          AND l.achternaam = 'Janssens'
+          AND NOT EXISTS (
+              SELECT 1 FROM event_inschrijving_dagen existing_day
+              WHERE existing_day.inschrijving_id = ei.inschrijving_id
+                AND existing_day.datum = '2026-09-05'
+          )
+        SQL);
+
+    $database->query(<<<'SQL'
+        INSERT INTO event_inschrijvingen
+            (event_id, lid_id, status, aangemeld_op)
+        SELECT e.event_id, l.lid_id, 'wachtend', NOW()
+        FROM evenementen e
+        INNER JOIN leden l ON l.voornaam = 'Bram' AND l.achternaam = 'Vermeulen'
+        WHERE e.titel = 'Primusfeesten 2026'
+        ON DUPLICATE KEY UPDATE
+            status = 'wachtend',
+            annulatie_aangevraagd_op = NULL,
+            uitgeschreven_op = NULL
+        SQL);
+
+    $database->query(<<<'SQL'
+        INSERT IGNORE INTO event_inschrijving_dagen (inschrijving_id, datum)
+        SELECT ei.inschrijving_id, '2026-09-06'
+        FROM event_inschrijvingen ei
+        INNER JOIN evenementen e ON e.event_id = ei.event_id
+        INNER JOIN leden l ON l.lid_id = ei.lid_id
+        WHERE e.titel = 'Primusfeesten 2026'
+          AND l.voornaam = 'Bram'
+          AND l.achternaam = 'Vermeulen'
+          AND NOT EXISTS (
+              SELECT 1 FROM event_inschrijving_dagen existing_day
+              WHERE existing_day.inschrijving_id = ei.inschrijving_id
+                AND existing_day.datum = '2026-09-06'
+          )
+        SQL);
 });
 
 echo "Lokale testdata is beschikbaar.\n";

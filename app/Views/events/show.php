@@ -190,7 +190,7 @@ if (
                     </div>
 
                     <p class="event-muted">
-                        Een administrator beheert eventuele shifttoewijzingen; je kiest zelf geen shift.
+                        Je kunt voor gepubliceerde shifts zelf een voorkeur doorgeven. Een administrator beoordeelt en beheert de definitieve toewijzing.
                     </p>
 
                     <?php if ($registration->hasPendingCancellation()): ?>

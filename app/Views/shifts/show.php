@@ -10,12 +10,14 @@ use App\Models\ShiftRegistration;
 /** @var bool|null $isAdmin */
 /** @var ShiftRegistration[] $registrations */
 /** @var ShiftRegistration|null $memberRegistration */
+/** @var bool|null $memberCanChoose */
 /** @var EventRegistration[] $eligibleEventRegistrations */
 /** @var string|null $title */
 
 $isAdmin ??= false;
 $registrations ??= [];
 $memberRegistration ??= null;
+$memberCanChoose ??= false;
 $eligibleEventRegistrations ??= [];
 
 $this->extend(
@@ -182,7 +184,43 @@ if ($isAdmin) {
                     <?php endif; ?>
 
                     <p class="shift-assignment-note">
-                        Shifttoewijzingen worden uitsluitend door een administrator beheerd.
+                        Een administrator kan deze keuze bevestigen, wijzigen, op reserve zetten of weigeren.
+                    </p>
+
+                    <?php if ($memberRegistration->isActief()): ?>
+                        <form method="post" action="<?= $this->escape(
+                            $helpers->url->to('/shifts/' . $shift->shiftId . '/withdraw')
+                        ) ?>" onsubmit="return confirm('Wil je deze shiftkeuze intrekken?');">
+                            <?= $helpers->csrf->field() ?>
+                            <button type="submit" class="btn btn-secondary">
+                                Keuze intrekken
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                <?php endif; ?>
+
+                <?php if (
+                    $memberCanChoose
+                    && ($memberRegistration === null || !$memberRegistration->isActief())
+                ): ?>
+                    <form method="post" action="<?= $this->escape(
+                        $helpers->url->to('/shifts/' . $shift->shiftId . '/register')
+                    ) ?>" class="shift-assignment-form">
+                        <?= $helpers->csrf->field() ?>
+                        <div class="form-group">
+                            <label for="opmerking_lid" class="form-label">
+                                Opmerking voor de planner <span class="shift-cell-muted">(optioneel)</span>
+                            </label>
+                            <textarea id="opmerking_lid" name="opmerking_lid"
+                                      class="form-control" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            Deze shift kiezen
+                        </button>
+                    </form>
+                <?php elseif ($memberRegistration === null): ?>
+                    <p class="shift-assignment-note">
+                        Je kunt deze shift alleen kiezen wanneer je voor het evenement en deze eventdag bent ingeschreven.
                     </p>
                 <?php endif; ?>
             </div>
@@ -202,7 +240,7 @@ if ($isAdmin) {
                             'empty-state',
                             [
                                 'title' => 'Geen beschikbare deelnemers',
-                                'text' => 'Bevestig eerst een evenementinschrijving voor deze dag, of alle geschikte deelnemers zijn al toegewezen.',
+                                'text' => 'Er zijn geen actieve evenementinschrijvingen voor deze dag, of alle geschikte deelnemers zijn al toegewezen.',
                             ]
                         ) ?>
                     <?php else: ?>
@@ -222,7 +260,7 @@ if ($isAdmin) {
                                     Vrijwilliger
                                 </label>
                                 <select id="lid_id" name="lid_id" class="form-control" required>
-                                    <option value="">Kies een bevestigde deelnemer</option>
+                                    <option value="">Kies een ingeschreven deelnemer</option>
                                     <?php foreach ($eligibleEventRegistrations as $eventRegistration): ?>
                                         <option value="<?= $eventRegistration->lidId ?>">
                                             <?= $this->escape($eventRegistration->lidNaam()) ?>

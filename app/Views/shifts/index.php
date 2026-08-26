@@ -68,8 +68,8 @@ $actions = $isAdmin
         [
             'title' => 'Shiftplanning',
             'subtitle' => $isAdmin
-                ? 'Beheer shifts en wijs bevestigde evenementdeelnemers toe.'
-                : 'Bekijk de shifts die een administrator aan jou heeft toegewezen.',
+                ? 'Beheer shifts en wijs ingeschreven evenementdeelnemers toe.'
+                : 'Kies een gepubliceerde shift voor een eventdag waarvoor je bent ingeschreven.',
             'actions' => $actions,
         ]
     ) ?>
@@ -250,8 +250,60 @@ $actions = $isAdmin
         <section class="card">
             <header class="card__header shift-card-header">
                 <div>
-                    <h2 class="card__title">Mijn toegewezen shifts</h2>
-                    <p>Je kan hier geen shift kiezen; de planning wordt door een administrator beheerd.</p>
+                    <h2 class="card__title">Beschikbare shifts</h2>
+                    <p>Je keuze wacht op beoordeling en kan door een administrator worden aangepast.</p>
+                </div>
+            </header>
+
+            <div class="card__body shift-table-body">
+                <?php if ($shifts === []): ?>
+                    <?= $this->component(
+                        'empty-state',
+                        [
+                            'title' => 'Geen beschikbare shifts',
+                            'text' => 'Er zijn momenteel geen gepubliceerde shifts voor jouw gekozen eventdagen.',
+                        ]
+                    ) ?>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Evenement</th>
+                                    <th>Shift</th>
+                                    <th>Datum en tijd</th>
+                                    <th>Bezetting</th>
+                                    <th>Actie</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($shifts as $availableShift): ?>
+                                    <tr>
+                                        <td><?= $this->escape($availableShift->eventTitel ?? '-') ?></td>
+                                        <td><?= $this->escape($availableShift->displayNaam()) ?></td>
+                                        <td><?= $this->escape($availableShift->displayPeriode()) ?></td>
+                                        <td><?= $availableShift->aantalBevestigd ?> / <?= $availableShift->maxPersonen ?></td>
+                                        <td>
+                                            <a href="<?= $this->escape(
+                                                $helpers->url->to('/shifts/' . $availableShift->shiftId)
+                                            ) ?>" class="btn btn-primary shift-small-button">
+                                                Bekijken en kiezen
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        <section class="card">
+            <header class="card__header shift-card-header">
+                <div>
+                    <h2 class="card__title">Mijn shiftkeuzes en toewijzingen</h2>
+                    <p>Bekijk de status van je keuzes en definitieve toewijzingen.</p>
                 </div>
             </header>
 

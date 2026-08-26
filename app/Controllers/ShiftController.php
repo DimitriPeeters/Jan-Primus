@@ -50,7 +50,9 @@ final class ShiftController extends BaseController
                     : [],
                 'shifts' => $isAdmin
                     ? $this->service->allForAdministration()
-                    : [],
+                    : ($memberId !== null
+                        ? $this->service->visibleToMember($memberId)
+                        : []),
                 'memberRegistrations' => $memberId !== null
                     ? $this->service->registrationsForMember(
                         $memberId
@@ -101,9 +103,7 @@ final class ShiftController extends BaseController
 
         $shift = $isAdmin
             ? $this->service->find($shiftId)
-            : ($memberRegistration !== null
-                ? $this->service->find($shiftId)
-                : null);
+            : $this->service->findVisibleToMembers($shiftId);
 
         if ($shift === null) {
             return $this->notFound(
@@ -123,6 +123,9 @@ final class ShiftController extends BaseController
                     )
                     : [],
                 'memberRegistration' => $memberRegistration,
+                'memberCanChoose' => !$isAdmin && $memberId !== null
+                    ? $this->service->canMemberChooseShift($shiftId, $memberId)
+                    : false,
                 'eligibleEventRegistrations' => $isAdmin
                     ? $this->service
                         ->eligibleEventRegistrationsForShift($shiftId)
@@ -347,6 +350,63 @@ final class ShiftController extends BaseController
         return $this->redirect(
             '/shifts/' . $shiftId
         );
+    }
+
+    public function register(): Response
+    {
+        $shiftId = $this->routeId();
+        $memberId = Auth::memberId();
+        $input = $this->request()->request->all();
+
+        try {
+            $this->validateCsrf($input);
+
+            if ($memberId === null || Auth::isAdmin()) {
+                throw new DomainException(
+                    'Alleen leden kunnen zichzelf voor een shift inschrijven.'
+                );
+            }
+
+            $request = new ShiftRegistrationRequest($input);
+            $data = $request->all();
+            $this->service->registerByMember(
+                $shiftId,
+                $memberId,
+                $data['opmerking_lid']
+            );
+
+            $this->success(
+                'Je shiftkeuze werd geregistreerd en wacht op beoordeling door een administrator.'
+            );
+        } catch (Throwable $throwable) {
+            $this->error($throwable->getMessage());
+        }
+
+        return $this->redirect('/shifts/' . $shiftId);
+    }
+
+    public function withdraw(): Response
+    {
+        $shiftId = $this->routeId();
+        $memberId = Auth::memberId();
+        $input = $this->request()->request->all();
+
+        try {
+            $this->validateCsrf($input);
+
+            if ($memberId === null || Auth::isAdmin()) {
+                throw new DomainException(
+                    'Alleen leden kunnen hun eigen shiftkeuze intrekken.'
+                );
+            }
+
+            $this->service->withdrawByMember($shiftId, $memberId);
+            $this->success('Je shiftkeuze werd ingetrokken.');
+        } catch (Throwable $throwable) {
+            $this->error($throwable->getMessage());
+        }
+
+        return $this->redirect('/shifts/' . $shiftId);
     }
 
     public function approve(): Response

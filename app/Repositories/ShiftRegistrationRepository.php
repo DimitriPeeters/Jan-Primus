@@ -305,6 +305,50 @@ final class ShiftRegistrationRepository
         return $this->database->lastInsertId();
     }
 
+    public function submitByMember(
+        int $shiftId,
+        int $memberId,
+        ?string $comment
+    ): int {
+        $statement = $this->database->prepare(<<<'SQL'
+            INSERT INTO shift_inschrijvingen
+            (
+                shift_id, lid_id, status, opmerking_lid,
+                goedgekeurd_door, goedgekeurd_op,
+                geannuleerd_door, geannuleerd_op, annulatie_reden,
+                aanwezig, aanwezig_afgevinkt_op, aangemaakt_op, bijgewerkt_op
+            )
+            VALUES
+            (
+                :shift_id, :lid_id, :status, :opmerking_lid,
+                NULL, NULL, NULL, NULL, NULL,
+                0, NULL, NOW(), NULL
+            )
+            ON DUPLICATE KEY UPDATE
+                status = VALUES(status),
+                opmerking_lid = VALUES(opmerking_lid),
+                goedgekeurd_door = NULL,
+                goedgekeurd_op = NULL,
+                geannuleerd_door = NULL,
+                geannuleerd_op = NULL,
+                annulatie_reden = NULL,
+                aanwezig = 0,
+                aanwezig_afgevinkt_op = NULL,
+                aangemaakt_op = NOW(),
+                bijgewerkt_op = NOW(),
+                inschrijving_id = LAST_INSERT_ID(inschrijving_id)
+            SQL);
+
+        $statement->execute([
+            'shift_id' => $shiftId,
+            'lid_id' => $memberId,
+            'status' => ShiftRegistration::STATUS_WACHTEND,
+            'opmerking_lid' => $comment,
+        ]);
+
+        return $this->database->lastInsertId();
+    }
+
     public function setDecision(
         int $id,
         string $status,
