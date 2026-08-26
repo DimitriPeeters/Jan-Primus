@@ -617,54 +617,6 @@ $cancelUrl = $isEdit
         </div>
     </section>
 
-    <?php if (!$isEdit): ?>
-        <section class="member-form__section">
-            <header class="member-form__section-header">
-                <h2 class="member-form__section-title">Gebruikersaccount</h2>
-            </header>
-
-            <div class="member-form__section-body">
-                <div class="member-form__grid">
-                    <div class="member-form__field">
-                        <label for="rol" class="member-form__label">
-                            Rol <span class="member-form__required">*</span>
-                        </label>
-                        <?php $role = (string) $value('rol', 'lid'); ?>
-                        <select id="rol" name="rol" class="member-form__control" required>
-                            <option value="lid"<?= $selected($role, 'lid') ?>>Lid</option>
-                            <option value="admin"<?= $selected($role, 'admin') ?>>Administrator</option>
-                        </select>
-                    </div>
-
-                    <div class="member-form__field">
-                        <span class="member-form__help">
-                            Het account wordt onmiddellijk goedgekeurd. Het lid kan met het
-                            e-mailadres hierboven en dit initiële wachtwoord aanmelden.
-                        </span>
-                    </div>
-
-                    <div class="member-form__field">
-                        <label for="password" class="member-form__label">
-                            Initieel wachtwoord <span class="member-form__required">*</span>
-                        </label>
-                        <input type="password" id="password" name="password"
-                               class="member-form__control" minlength="8" required
-                               autocomplete="new-password">
-                    </div>
-
-                    <div class="member-form__field">
-                        <label for="password_confirmation" class="member-form__label">
-                            Wachtwoord herhalen <span class="member-form__required">*</span>
-                        </label>
-                        <input type="password" id="password_confirmation"
-                               name="password_confirmation" class="member-form__control"
-                               minlength="8" required autocomplete="new-password">
-                    </div>
-                </div>
-            </div>
-        </section>
-    <?php endif; ?>
-
     <div class="member-form__actions">
         <a
             href="<?= $this->escape($cancelUrl) ?>"

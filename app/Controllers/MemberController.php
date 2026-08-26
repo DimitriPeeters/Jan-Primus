@@ -77,45 +77,6 @@ final class MemberController extends BaseController
         );
     }
 
-    public function create(): Response
-    {
-        return $this->view(
-            'members.create',
-            [
-                'title' => 'Nieuw lid',
-            ]
-        );
-    }
-
-    public function store(): Response
-    {
-        $input = $this->request()->request->all();
-
-        Session::flash('_old_input', $input);
-
-        try {
-            $this->validateCsrf($input);
-            $memberRequest = new MemberRequest($input);
-            $memberId = $this->service->create($memberRequest->all());
-
-            $this->success(
-                'Het lid en het gekoppelde gebruikersaccount werden aangemaakt.'
-            );
-
-            return $this->redirect('/members/' . $memberId);
-        } catch (Throwable $throwable) {
-            Session::flash('_errors', [
-                'form' => [$throwable->getMessage()],
-            ]);
-
-            $this->error(
-                'Het lid en gebruikersaccount konden niet worden aangemaakt.'
-            );
-
-            return $this->redirect('/members/create');
-        }
-    }
-
     public function edit(): Response
     {
         $id = $this->routeId();
