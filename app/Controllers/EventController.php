@@ -77,6 +77,7 @@ final class EventController extends BaseController
         }
 
         $memberId = Auth::memberId();
+        $canParticipate = $memberId !== null;
 
         return $this->view(
             'events.show',
@@ -84,7 +85,8 @@ final class EventController extends BaseController
                 'title' => $event->titel,
                 'event' => $event,
                 'isAdmin' => $isAdmin,
-                'registration' => !$isAdmin && $memberId !== null
+                'canParticipate' => $canParticipate,
+                'registration' => $canParticipate
                     ? $this->service->registrationForMember(
                         $id,
                         $memberId

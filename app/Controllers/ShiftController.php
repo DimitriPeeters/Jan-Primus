@@ -94,7 +94,8 @@ final class ShiftController extends BaseController
         $shiftId = $this->routeId();
         $isAdmin = Auth::isAdmin();
         $memberId = Auth::memberId();
-        $memberRegistration = !$isAdmin && $memberId !== null
+        $canParticipate = $memberId !== null;
+        $memberRegistration = $canParticipate
             ? $this->service->findMemberRegistration(
                 $shiftId,
                 $memberId
@@ -117,13 +118,14 @@ final class ShiftController extends BaseController
                 'title' => $shift->displayNaam(),
                 'shift' => $shift,
                 'isAdmin' => $isAdmin,
+                'canParticipate' => $canParticipate,
                 'registrations' => $isAdmin
                     ? $this->service->registrationsForShift(
                         $shiftId
                     )
                     : [],
                 'memberRegistration' => $memberRegistration,
-                'memberCanChoose' => !$isAdmin && $memberId !== null
+                'memberCanChoose' => $canParticipate
                     ? $this->service->canMemberChooseShift($shiftId, $memberId)
                     : false,
                 'eligibleEventRegistrations' => $isAdmin
@@ -361,9 +363,9 @@ final class ShiftController extends BaseController
         try {
             $this->validateCsrf($input);
 
-            if ($memberId === null || Auth::isAdmin()) {
+            if ($memberId === null) {
                 throw new DomainException(
-                    'Alleen leden kunnen zichzelf voor een shift inschrijven.'
+                    'Je account heeft geen gekoppeld ledenprofiel.'
                 );
             }
 
@@ -394,9 +396,9 @@ final class ShiftController extends BaseController
         try {
             $this->validateCsrf($input);
 
-            if ($memberId === null || Auth::isAdmin()) {
+            if ($memberId === null) {
                 throw new DomainException(
-                    'Alleen leden kunnen hun eigen shiftkeuze intrekken.'
+                    'Je account heeft geen gekoppeld ledenprofiel.'
                 );
             }
 

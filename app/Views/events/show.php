@@ -8,12 +8,14 @@ use App\Models\Shift;
 /** @var ViewHelpers $helpers */
 /** @var Event $event */
 /** @var bool|null $isAdmin */
+/** @var bool|null $canParticipate */
 /** @var EventRegistration|null $registration */
 /** @var EventRegistration[] $registrations */
 /** @var Shift[] $shifts */
 /** @var string|null $title */
 
 $isAdmin ??= false;
+$canParticipate ??= false;
 $registration ??= null;
 $registrations ??= [];
 $shifts ??= [];
@@ -151,7 +153,9 @@ if (
                             <dt>Openstaande annulaties</dt>
                             <dd><?= $event->aantalAnnulatieverzoeken ?></dd>
                         </div>
-                    <?php elseif ($registration !== null): ?>
+                    <?php endif; ?>
+
+                    <?php if ($registration !== null): ?>
                         <div>
                             <dt>Mijn inschrijving</dt>
                             <dd>
@@ -166,7 +170,7 @@ if (
         </aside>
     </div>
 
-    <?php if (!$isAdmin): ?>
+    <?php if ($canParticipate): ?>
         <section class="card">
             <header class="card__header">
                 <h2 class="card__title">Mijn deelname</h2>

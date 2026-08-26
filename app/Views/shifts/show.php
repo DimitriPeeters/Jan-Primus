@@ -8,6 +8,7 @@ use App\Models\ShiftRegistration;
 /** @var ViewHelpers $helpers */
 /** @var Shift $shift */
 /** @var bool|null $isAdmin */
+/** @var bool|null $canParticipate */
 /** @var ShiftRegistration[] $registrations */
 /** @var ShiftRegistration|null $memberRegistration */
 /** @var bool|null $memberCanChoose */
@@ -15,6 +16,7 @@ use App\Models\ShiftRegistration;
 /** @var string|null $title */
 
 $isAdmin ??= false;
+$canParticipate ??= false;
 $registrations ??= [];
 $memberRegistration ??= null;
 $memberCanChoose ??= false;
@@ -152,7 +154,7 @@ if ($isAdmin) {
         </aside>
     </div>
 
-    <?php if (!$isAdmin): ?>
+    <?php if ($canParticipate): ?>
         <section class="card">
             <header class="card__header">
                 <h2 class="card__title">Mijn shifttoewijzing</h2>
