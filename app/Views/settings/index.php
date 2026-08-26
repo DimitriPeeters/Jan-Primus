@@ -21,7 +21,7 @@ $system = $status['system'];
         'page-header',
         [
             'title' => 'Instellingen',
-            'subtitle' => 'Beheer centrale standaarden en controleer de technische gereedheid van AEFS.',
+            'subtitle' => 'Beheer centrale standaarden en controleer de technische gereedheid van Ledenbeheer.',
         ]
     ) ?>
 
@@ -194,7 +194,7 @@ $system = $status['system'];
                 <footer class="card__footer settings-note">
                     <?php if ($mail['scheduler']['configured']): ?>
                         De beveiligde HTTPS-ingang is gereed. De externe scheduler moet daarnaast actief blijven
-                        om de wachtrij na het sluiten van AEFS te verwerken.
+                        om de wachtrij na het sluiten van Ledenbeheer te verwerken.
                     <?php else: ?>
                         De webpagina start zelf geen achtergrondworker. Een lokale taak, server-cron of beveiligde
                         externe scheduler moet actief blijven om de wachtrij te verwerken.
@@ -385,7 +385,7 @@ $system = $status['system'];
 
     .settings-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.8fr);
+        grid-template-columns: minmax(0, 1.35fr) minmax(380px, 0.9fr);
         gap: 1.25rem;
         align-items: start;
     }
@@ -473,7 +473,7 @@ $system = $status['system'];
 
     .settings-status-list > div {
         display: grid;
-        grid-template-columns: minmax(110px, 0.65fr) minmax(0, 1fr);
+        grid-template-columns: minmax(135px, 0.7fr) minmax(0, 1fr);
         gap: 1rem;
         padding: 0.85rem 0;
         border-bottom: 1px solid var(--color-border);
@@ -485,6 +485,7 @@ $system = $status['system'];
 
     .settings-status-list span {
         color: var(--color-text-muted);
+        overflow-wrap: anywhere;
     }
 
     .settings-status-list strong {
@@ -545,7 +546,7 @@ $system = $status['system'];
         padding: 0.35rem;
     }
 
-    @media (max-width: 1050px) {
+    @media (max-width: 1180px) {
         .settings-grid {
             grid-template-columns: 1fr;
         }
