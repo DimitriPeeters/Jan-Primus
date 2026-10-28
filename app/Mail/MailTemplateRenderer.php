@@ -383,6 +383,38 @@ final class MailTemplateRenderer
         );
     }
 
+    public function newsletter(
+        string $subject,
+        string $body,
+        string $firstName
+    ): MailContent {
+        $html = '<p style="margin:0 0 8px;color:#ef6012;font-size:12px;'
+            . 'font-weight:700;letter-spacing:1.2px;text-transform:uppercase">'
+            . 'Nieuwsbrief</p>'
+            . '<h1 style="margin:0 0 20px;color:#211711;font-size:28px;'
+            . 'line-height:1.2">'
+            . $this->escape($subject)
+            . '</h1>'
+            . '<div style="height:4px;width:56px;margin:0 0 24px;'
+            . 'border-radius:2px;background:#ef6012"></div>'
+            . $this->paragraphs($body);
+
+        $text = implode(PHP_EOL, [
+            $this->greeting($firstName),
+            '',
+            'NIEUWSBRIEF',
+            $subject,
+            '',
+            trim($body),
+        ]);
+
+        return new MailContent(
+            $subject,
+            $this->layout($subject, $firstName, $html),
+            $this->plainLayout($text)
+        );
+    }
+
     private function eventCard(Event $event, string $description): string
     {
         $location = $event->hasLocation()

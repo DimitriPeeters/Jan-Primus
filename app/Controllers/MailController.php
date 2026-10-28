@@ -113,14 +113,17 @@ final class MailController extends BaseController
                 );
             }
 
+            $data = $request->all();
             $mailingId = $this->service->queueManual(
-                $request->all(),
+                $data,
                 $attachment instanceof UploadedFile ? $attachment : null,
                 $this->requireUserId()
             );
 
             $this->success(
-                'De mailing werd gepersonaliseerd en in de verzendwachtrij geplaatst.'
+                ($data['bericht_type'] ?? '') === 'nieuwsbrief'
+                    ? 'De nieuwsbrief werd gepersonaliseerd en in de verzendwachtrij geplaatst.'
+                    : 'De mailing werd gepersonaliseerd en in de verzendwachtrij geplaatst.'
             );
 
             return $this->redirect('/mailings/' . $mailingId);

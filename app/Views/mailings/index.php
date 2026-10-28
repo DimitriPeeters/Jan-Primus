@@ -19,9 +19,9 @@ $this->extend('layouts.app', ['title' => $title ?? 'Mailings']);
         'page-header',
         [
             'title' => 'Mailings',
-            'subtitle' => 'Automatische en manuele mails met individuele aflevering en opvolging.',
+            'subtitle' => 'Automatische mails, manuele berichten en nieuwsbrieven met individuele aflevering en opvolging.',
             'actions' => sprintf(
-                '<a class="btn btn-primary" href="%s">Nieuwe mailing</a>',
+                '<a class="btn btn-primary" href="%s">Nieuw bericht of nieuwsbrief</a>',
                 $this->escape($helpers->url->to('/mailings/create'))
             ),
         ]

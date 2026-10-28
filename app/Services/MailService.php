@@ -351,15 +351,22 @@ final class MailService
                     $createdBy,
                     $storedAttachment
                 ): int {
+                    $isNewsletter = ($data['bericht_type'] ?? '') === 'nieuwsbrief';
+                    $type = $isNewsletter ? 'nieuwsbrief' : 'manueel';
                     $mailingId = $this->createPersonalizedMailing(
-                        type: 'manueel',
+                        type: $type,
                         audienceType: (string) $data['doelgroep_type'],
                         audience: $this->audienceSnapshot($data),
                         eventId: null,
                         createdBy: $createdBy,
                         members: $members,
-                        content: fn(array $member): MailContent => $this->templates
-                            ->manual(
+                        content: fn(array $member): MailContent => $isNewsletter
+                            ? $this->templates->newsletter(
+                                (string) $data['onderwerp'],
+                                (string) $data['inhoud'],
+                                (string) ($member['voornaam'] ?? '')
+                            )
+                            : $this->templates->manual(
                                 (string) $data['onderwerp'],
                                 (string) $data['inhoud'],
                                 (string) ($member['voornaam'] ?? '')
@@ -378,7 +385,7 @@ final class MailService
                         id: $mailingId,
                         userId: $createdBy,
                         values: [
-                            'type' => 'manueel',
+                            'type' => $type,
                             'doelgroep' => $this->audienceSnapshot($data),
                             'onderwerp' => $data['onderwerp'],
                             'ontvangers' => count($members),

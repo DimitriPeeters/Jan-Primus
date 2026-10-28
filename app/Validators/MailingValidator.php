@@ -10,6 +10,11 @@ use InvalidArgumentException;
 
 final class MailingValidator
 {
+    private const MESSAGE_TYPES = [
+        'mailing',
+        'nieuwsbrief',
+    ];
+
     private const AUDIENCE_TYPES = [
         'alle_leden',
         'evenement',
@@ -42,9 +47,16 @@ final class MailingValidator
         array $data,
         ?UploadedFile $attachment
     ): void {
+        $messageType = (string) ($data['bericht_type'] ?? '');
         $audienceType = (string) ($data['doelgroep_type'] ?? '');
         $subject = trim((string) ($data['onderwerp'] ?? ''));
         $body = trim((string) ($data['inhoud'] ?? ''));
+
+        if (!in_array($messageType, self::MESSAGE_TYPES, true)) {
+            throw new InvalidArgumentException(
+                'Kies een geldig berichttype.'
+            );
+        }
 
         if (!in_array($audienceType, self::AUDIENCE_TYPES, true)) {
             throw new InvalidArgumentException(

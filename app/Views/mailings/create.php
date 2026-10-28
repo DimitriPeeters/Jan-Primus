@@ -9,6 +9,10 @@ use AEFS\Core\View\Helper\ViewHelpers;
 
 $this->extend('layouts.app', ['title' => $title ?? 'Nieuwe mailing']);
 
+$messageType = (string) $helpers->old->get(
+    'bericht_type',
+    'mailing'
+);
 $audienceType = (string) $helpers->old->get(
     'doelgroep_type',
     'alle_leden'
@@ -59,6 +63,28 @@ $selectedShifts = is_array($selectedShifts)
         class="mailing-compose-form"
     >
         <?= $helpers->csrf->field() ?>
+
+        <section class="card">
+            <header class="card__header">
+                <h2 class="card__title">Berichttype</h2>
+            </header>
+            <div class="card__body mailing-form-grid">
+                <div class="form-group mailing-full-width">
+                    <label for="bericht_type">Wat wil je versturen? *</label>
+                    <select id="bericht_type" name="bericht_type" required>
+                        <option value="mailing" <?= $messageType === 'mailing' ? 'selected' : '' ?>>
+                            Gewone mailing
+                        </option>
+                        <option value="nieuwsbrief" <?= $messageType === 'nieuwsbrief' ? 'selected' : '' ?>>
+                            Nieuwsbrief
+                        </option>
+                    </select>
+                    <small>
+                        Een nieuwsbrief krijgt een herkenbare Jan Primus-opmaak met een prominente titel. Beide berichttypes worden persoonlijk en via dezelfde veilige wachtrij verstuurd.
+                    </small>
+                </div>
+            </div>
+        </section>
 
         <section class="card">
             <header class="card__header">
@@ -171,7 +197,7 @@ $selectedShifts = is_array($selectedShifts)
                         (string) $helpers->old->get('inhoud', '')
                     ) ?></textarea>
                     <small>
-                        Ledenbeheer voegt automatisch “Beste [voornaam]” en de vaste afsluiting toe. Lege regels vormen afzonderlijke alinea’s.
+                        Ledenbeheer voegt automatisch “Beste [voornaam]” en de vaste afsluiting toe. Lege regels vormen afzonderlijke alinea’s. Bij een nieuwsbrief wordt het onderwerp ook als grote titel getoond.
                     </small>
                 </div>
 
@@ -193,7 +219,7 @@ $selectedShifts = is_array($selectedShifts)
                 Annuleren
             </a>
             <button class="btn btn-success" type="submit">
-                Mailing inplannen
+                Bericht inplannen
             </button>
         </div>
     </form>

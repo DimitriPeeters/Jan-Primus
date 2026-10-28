@@ -59,9 +59,6 @@ final readonly class ViewEngineSmokeTest
                         'startdatum' => '2026-08-01',
                     ],
                 ],
-                'pendingRegistrations' => [],
-                'pendingEventCancellations' => [],
-                'pendingEventRegistrations' => [],
                 'openShifts' => [],
             ]
         );
@@ -101,13 +98,19 @@ final readonly class ViewEngineSmokeTest
             $html
         );
 
-        $this->assertContains(
+        $this->assertNotContains(
             'Wachtende eventinschrijvingen',
             $html
         );
 
-        $this->assertContains(
+        $this->assertNotContains(
             'Openstaande annulatieaanvragen',
+            $html
+        );
+
+        $this->assertNotContains(
+            '<h3 class="dashboard-section__title">' . PHP_EOL
+                . '                        Wachtende accounts',
             $html
         );
 
@@ -122,6 +125,7 @@ final readonly class ViewEngineSmokeTest
         );
 
         $this->assertUsersView();
+        $this->assertMailingComposeView();
     }
 
 
@@ -172,6 +176,29 @@ final readonly class ViewEngineSmokeTest
         }
     }
 
+    private function assertMailingComposeView(): void
+    {
+        $html = $this->view->render(
+            'mailings.create',
+            [
+                'title' => 'Nieuwe mailing',
+                'options' => [
+                    'events' => [],
+                    'shifts' => [],
+                ],
+                'mailConfigured' => true,
+                'recipientRestriction' => [
+                    'active' => false,
+                    'emails' => [],
+                ],
+            ]
+        );
+
+        $this->assertContains('Nieuwsbrief', $html);
+        $this->assertContains('name="bericht_type"', $html);
+        $this->assertContains('value="nieuwsbrief"', $html);
+    }
+
     private function assertViewExists(string $view): void
     {
         if ($this->view->exists($view)) {
@@ -198,6 +225,22 @@ final readonly class ViewEngineSmokeTest
             sprintf(
                 'Verwachte inhoud [%s] werd niet gerenderd.',
                 $expected
+            )
+        );
+    }
+
+    private function assertNotContains(
+        string $unexpected,
+        string $actual
+    ): void {
+        if (!str_contains($actual, $unexpected)) {
+            return;
+        }
+
+        throw new RuntimeException(
+            sprintf(
+                'Onverwachte inhoud [%s] werd gerenderd.',
+                $unexpected
             )
         );
     }

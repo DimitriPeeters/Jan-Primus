@@ -70,6 +70,7 @@ final class Mailing
             'shift_planning' => 'Shiftplanning',
             'wachtwoord_reset' => 'Wachtwoordherstel',
             'manueel' => 'Manuele mailing',
+            'nieuwsbrief' => 'Nieuwsbrief',
             default => ucfirst(str_replace('_', ' ', $this->type)),
         };
     }

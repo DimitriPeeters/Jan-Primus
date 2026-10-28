@@ -16,6 +16,7 @@ final class MailingRequest
 
     /**
      * @return array{
+     *     bericht_type: string,
      *     doelgroep_type: string,
      *     event_id: int,
      *     shift_id: int,
@@ -27,6 +28,9 @@ final class MailingRequest
     public function all(): array
     {
         return [
+            'bericht_type' => trim(
+                (string) ($this->input['bericht_type'] ?? 'mailing')
+            ),
             'doelgroep_type' => trim(
                 (string) ($this->input['doelgroep_type'] ?? '')
             ),

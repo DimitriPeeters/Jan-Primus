@@ -99,6 +99,22 @@ $this->extend('layouts.app', ['title' => $title ?? $mailing->subject]);
         </section>
     </div>
 
+    <?php if ($mailing->type === 'nieuwsbrief'): ?>
+        <section class="card">
+            <header class="card__header">
+                <h2 class="card__title">Voorbeeld nieuwsbrief</h2>
+            </header>
+            <div class="card__body mailing-html-preview-body">
+                <iframe
+                    class="mailing-html-preview"
+                    title="Voorbeeld van de nieuwsbrief"
+                    sandbox=""
+                    srcdoc="<?= $this->escape($mailing->html) ?>"
+                ></iframe>
+            </div>
+        </section>
+    <?php endif; ?>
+
     <section class="card">
         <header class="card__header">
             <h2 class="card__title">Afleveringen</h2>
@@ -200,6 +216,19 @@ $this->extend('layouts.app', ['title' => $title ?? $mailing->subject]);
         overflow-wrap: anywhere;
         font: inherit;
         line-height: 1.55;
+    }
+
+    .mailing-html-preview-body {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .mailing-html-preview {
+        display: block;
+        width: 100%;
+        min-height: 720px;
+        border: 0;
+        background: #f7f4f1;
     }
 
     .mailing-table-body {
